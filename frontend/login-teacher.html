@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>دخول المدرّس | إتقان</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800;900&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{ --ink:#142433; --ink-soft:#2B3E4F; --paper:#F4F5F1; --paper-2:#ECEEE8; --gold:#C89B3C; --gold-light:#F7EFDD; --sage:#3F6D5C; --sage-light:#E7F0EA; --line:#D8DBD4; --white:#FFFFFF; --accent:var(--gold); }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'IBM Plex Sans Arabic',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
+  .card{background:var(--white);border:1px solid var(--line);border-radius:20px;padding:40px;width:100%;max-width:420px;box-shadow:0 20px 50px rgba(20,36,51,.08);}
+  .brand{display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:18px;}
+  .brand img{height:44px;width:auto;object-fit:contain;display:block;}
+  .role-badge{display:block;text-align:center;font-family:'Cairo',sans-serif;font-weight:700;font-size:13px;color:var(--accent);background:var(--gold-light);padding:6px 14px;border-radius:100px;width:fit-content;margin:0 auto 26px;}
+  h1{font-family:'Cairo',sans-serif;font-size:22px;text-align:center;margin-bottom:8px;}
+  p.sub{text-align:center;color:var(--ink-soft);font-size:14px;margin-bottom:28px;}
+  .field{margin-bottom:18px;}
+  .field label{display:block;font-size:13.5px;font-weight:600;color:var(--ink-soft);margin-bottom:7px;}
+  .field input{width:100%;padding:13px 15px;border-radius:10px;border:1px solid var(--line);background:var(--paper);font-family:inherit;font-size:15px;outline:none;transition:border-color .2s;}
+  .field input:focus{border-color:var(--accent);}
+  .btn{width:100%;font-family:'Cairo',sans-serif;font-weight:700;font-size:15.5px;padding:14px;border-radius:10px;border:none;cursor:pointer;background:var(--ink);color:var(--paper);transition:all .2s;margin-top:6px;}
+  .btn:hover{background:var(--accent);color:var(--ink);}
+  .error{background:#FBEAEA;color:#9A2E2E;padding:10px 14px;border-radius:10px;font-size:13.5px;margin-bottom:16px;display:none;}
+  .error.show{display:block;}
+  .switch-links{margin-top:26px;display:flex;flex-direction:column;gap:10px;text-align:center;}
+  .switch-links a{font-size:13.5px;color:var(--ink-soft);}
+  .switch-links a:hover{color:var(--accent);}
+  .back-home{position:fixed;top:22px;right:26px;font-size:13.5px;color:var(--ink-soft);}
+</style>
+</head>
+<body>
+  <a class="back-home" href="index.html">← الرجوع للصفحة الرئيسية</a>
+  <div class="card">
+    <div class="brand"><img src="etqan-logo.png" alt="إتقان"></div>
+    <span class="role-badge">دخول المدرّس</span>
+    <h1>دخول المدرّسين</h1>
+    <p class="sub">سجّل دخولك للوصول إلى لوحة تحكم المدرّس</p>
+    <div class="error" id="errBox"></div>
+    <form id="loginForm">
+      <div class="field"><label>البريد الإلكتروني</label><input type="email" id="fEmail" placeholder="teacher@etqan.com" required></div>
+      <div class="field"><label>كلمة المرور</label><input type="password" id="fPass" placeholder="••••••••" required></div>
+      <button class="btn" type="submit">دخول</button>
+    </form>
+    <p style="font-size:12px;color:var(--ink-soft);text-align:center;margin-top:14px;">تجربة: sara@etqan.com / Teacher@123</p>
+    <div class="switch-links">
+      <a href="login-student.html">دخول الطالب</a>
+      <a href="login-admin.html">دخول المدير العام</a>
+    </div>
+  </div>
+<script src="common.js"></script>
+<script src="api.js"></script>
+<script>
+  document.getElementById('loginForm').addEventListener('submit', async function(e){
+    e.preventDefault();
+    const email = document.getElementById('fEmail').value.trim();
+    const pass = document.getElementById('fPass').value;
+    const errBox = document.getElementById('errBox');
+    const btn = e.target.querySelector('button[type="submit"]');
+    errBox.classList.remove('show');
+    btn.disabled = true; btn.textContent = 'جارِ الدخول...';
+    const res = await EtqanAPI.login({ email, password: pass });
+    btn.disabled = false; btn.textContent = 'دخول';
+    if (res.ok && res.user && res.user.role === 'teacher') {
+      window.location.href = 'teacher-dashboard.html';
+    } else if (res.ok) {
+      errBox.textContent = 'هذا الحساب ليس حساب مدرّس.';
+      errBox.classList.add('show');
+    } else {
+      errBox.textContent = (res.errors && res.errors[0]) || 'بيانات الدخول غير صحيحة';
+      errBox.classList.add('show');
+    }
+  });
+</script>
+</body>
+</html>

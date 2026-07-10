@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>إتقان | دروس تأسيسية أونلاين</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800;900&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#142433;
+    --ink-soft:#2B3E4F;
+    --paper:#F4F5F1;
+    --paper-2:#ECEEE8;
+    --gold:#C89B3C;
+    --gold-light:#F7EFDD;
+    --sage:#3F6D5C;
+    --sage-light:#E7F0EA;
+    --line:#D8DBD4;
+    --white:#FFFFFF;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:'IBM Plex Sans Arabic', sans-serif;
+    background:var(--paper);
+    color:var(--ink);
+    line-height:1.7;
+    overflow-x:hidden;
+  }
+  h1,h2,h3,.display{
+    font-family:'Cairo', sans-serif;
+    font-weight:800;
+    color:var(--ink);
+  }
+  a{text-decoration:none;color:inherit;}
+  ul{list-style:none;}
+  img{max-width:100%;display:block;}
+  .container{
+    max-width:1180px;
+    margin:0 auto;
+    padding:0 32px;
+  }
+  section{padding:110px 0;position:relative;}
+  .eyebrow{
+    font-family:'Cairo',sans-serif;
+    font-weight:700;
+    font-size:13px;
+    letter-spacing:.5px;
+    color:var(--gold);
+    background:var(--gold-light);
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:6px 16px;
+    border-radius:100px;
+    margin-bottom:22px;
+  }
+  .eyebrow::before{
+    content:"";
+    width:6px;height:6px;
+    background:var(--gold);
+    border-radius:50%;
+    display:inline-block;
+  }
+  .reveal{
+    opacity:0;
+    transform:translateY(24px);
+    transition:opacity .7s ease, transform .7s ease;
+  }
+  .reveal.in{opacity:1;transform:translateY(0);}
+
+  /* ===== HEADER ===== */
+  header{
+    position:fixed;
+    top:0;left:0;right:0;
+    z-index:100;
+    background:rgba(244,245,241,.86);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav-wrap{
+    max-width:1180px;
+    margin:0 auto;
+    padding:18px 32px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+  .logo{
+    display:flex;align-items:center;
+  }
+  .logo-mark{
+    height:42px;width:auto;
+    object-fit:contain;
+    display:block;
+  }
+  .login-menu{position:relative;}
+  .login-menu-btn{
+    font-family:'Cairo',sans-serif;font-weight:700;font-size:15px;
+    background:transparent;border:1.5px solid var(--ink);color:var(--ink);
+    padding:12px 22px;border-radius:10px;cursor:pointer;transition:all .2s ease;
+    display:flex;align-items:center;gap:6px;
+  }
+  .login-menu-btn:hover{background:var(--ink);color:var(--paper);}
+  .login-dropdown{
+    position:absolute;top:calc(100% + 10px);left:0;
+    background:var(--white);border:1px solid var(--line);border-radius:14px;
+    box-shadow:0 16px 40px rgba(20,36,51,.14);padding:8px;min-width:190px;
+    opacity:0;visibility:hidden;transform:translateY(-6px);
+    transition:all .18s ease;z-index:50;
+  }
+  .login-menu.open .login-dropdown{opacity:1;visibility:visible;transform:translateY(0);}
+  .login-dropdown a{
+    display:block;padding:11px 14px;border-radius:9px;font-size:14px;font-weight:600;color:var(--ink);
+  }
+  nav ul{display:flex;gap:36px;}
+  @media (max-width:900px){
+    .login-menu-btn{padding:9px 16px;font-size:13.5px;}
+  }
+
+  nav a{
+    font-weight:600;
+    font-size:15px;
+    color:var(--ink-soft);
+    transition:color .2s;
+    position:relative;
+  }
+  nav a:hover{color:var(--gold);}
+  .btn{
+    font-family:'Cairo',sans-serif;
+    font-weight:700;
+    font-size:15px;
+    padding:12px 26px;
+    border-radius:10px;
+    display:inline-block;
+    transition:all .25s ease;
+    border:none;
+    cursor:pointer;
+  }
+  .btn-primary{
+    background:var(--ink);
+    color:var(--paper);
+  }
+  .btn-primary:hover{
+    background:var(--gold);
+    color:var(--ink);
+    transform:translateY(-2px);
+  }
+  .btn-ghost{
+    background:transparent;
+    border:1.5px solid var(--ink);
+    color:var(--ink);
+  }
+  .btn-ghost:hover{
+    background:var(--ink);
+    color:var(--paper);
+  }
+  .nav-cta{display:flex;align-items:center;gap:18px;}
+  .menu-toggle{display:none;flex-direction:column;gap:5px;cursor:pointer;}
+  .menu-toggle span{width:26px;height:2.5px;background:var(--ink);border-radius:2px;}
+
+  /* ===== HERO ===== */
+  .hero{
+    padding:190px 0 120px;
+    position:relative;
+  }
+  .hero-grid{
+    display:grid;
+    grid-template-columns:1.1fr .9fr;
+    gap:60px;
+    align-items:center;
+  }
+  .hero h1{
+    font-size:56px;
+    line-height:1.25;
+    margin-bottom:24px;
+  }
+  .hero h1 span{color:var(--gold);}
+  .hero p.lead{
+    font-size:19px;
+    color:var(--ink-soft);
+    max-width:520px;
+    margin-bottom:38px;
+  }
+  .hero-actions{display:flex;gap:16px;align-items:center;flex-wrap:wrap;}
+  .hero-note{
+    margin-top:32px;
+    font-size:14px;
+    color:var(--ink-soft);
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .hero-note::before{
+    content:"";
+    width:8px;height:8px;
+    border-radius:50%;
+    background:var(--sage);
+  }
+
+  /* signature star build */
+  .star-stage{
+    position:relative;
+    width:100%;
+    aspect-ratio:1/1;
+    max-width:440px;
+    margin:0 auto;
+  }
+  .block{
+    position:absolute;
+    background:var(--ink);
+    border-radius:4px;
+    opacity:0;
+    transform:scale(.3);
+    transition:opacity .5s ease, transform .5s cubic-bezier(.2,.8,.3,1.2);
+  }
+  .block.gold{background:var(--gold);}
+  .block.sage{background:var(--sage);}
+  .star-stage.in .block{opacity:1;transform:scale(1);}
+  .star-caption{
+    text-align:center;
+    margin-top:20px;
+    font-size:13px;
+    color:var(--ink-soft);
+    font-weight:600;
+  }
+
+  /* ===== ABOUT ===== */
+  .about-grid{
+    display:grid;
+    grid-template-columns:.85fr 1.15fr;
+    gap:70px;
+    align-items:center;
+  }
+  .about-visual{
+    background:var(--ink);
+    border-radius:20px;
+    aspect-ratio:4/5;
+    position:relative;
+    overflow:hidden;
+    display:flex;
+    align-items:flex-end;
+    padding:28px;
+  }
+  .about-visual img{
+    position:absolute;inset:0;
+    width:100%;height:100%;
+    object-fit:cover;
+    opacity:.85;
+  }
+  .about-visual .tag{
+    position:relative;
+    z-index:2;
+    background:rgba(244,245,241,.95);
+    padding:14px 20px;
+    border-radius:12px;
+    font-family:'Cairo',sans-serif;
+    font-weight:700;
+    font-size:15px;
+  }
+  .about h2{font-size:38px;margin-bottom:22px;}
+  .about p.body-text{
+    font-size:17px;
+    color:var(--ink-soft);
+    margin-bottom:32px;
+    max-width:560px;
+  }
+  .fact-list{display:flex;flex-direction:column;gap:18px;}
+  .fact-item{
+    display:flex;
+    align-items:flex-start;
+    gap:16px;
+    padding-bottom:18px;
+    border-bottom:1px solid var(--line);
+  }
+  .fact-item:last-child{border-bottom:none;}
+  .fact-icon{
+    width:38px;height:38px;
+    border-radius:10px;
+    background:var(--sage-light);
+    color:var(--sage);
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;
+    font-size:18px;
+  }
+  .fact-text strong{
+    font-family:'Cairo',sans-serif;
+    display:block;
+    margin-bottom:2px;
+    font-size:16px;
+  }
+  .fact-text span{font-size:14.5px;color:var(--ink-soft);}
+
+  /* ===== SUBJECTS ===== */
+  .subjects-header{
+    text-align:center;
+    max-width:640px;
+    margin:0 auto 64px;
+  }
+  .subjects-header h2{font-size:38px;margin-bottom:16px;}
+  .subjects-header p{color:var(--ink-soft);font-size:17px;}
+  .subject-row{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:0;
+    position:relative;
+    border:1px solid var(--line);
+    border-radius:22px;
+    overflow:hidden;
+    background:var(--white);
+  }
+  .subject-card{
+    padding:48px 34px;
+    position:relative;
+    border-left:1px solid var(--line);
+    transition:background .3s ease;
+  }
+  .subject-card:last-child{border-left:none;}
+  .subject-card:hover{background:var(--paper-2);}
+  .subject-icon{
+    width:56px;height:56px;
+    border-radius:14px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:26px;
+    margin-bottom:26px;
+    font-family:'Cairo',sans-serif;
+    font-weight:800;
+    color:var(--white);
+  }
+  .subject-card:nth-child(1) .subject-icon{background:var(--sage);}
+  .subject-card:nth-child(2) .subject-icon{background:var(--gold);}
+  .subject-card:nth-child(3) .subject-icon{background:var(--ink);}
+  .subject-card h3{font-size:21px;margin-bottom:12px;}
+  .subject-card p{color:var(--ink-soft);font-size:15.5px;margin-bottom:20px;}
+  .subject-card .tags{display:flex;gap:8px;flex-wrap:wrap;}
+  .subject-card .tags span{
+    font-size:12.5px;
+    background:var(--paper-2);
+    padding:5px 12px;
+    border-radius:100px;
+    color:var(--ink-soft);
+    font-weight:600;
+  }
+
+  /* ===== WHY ===== */
+  .why{background:var(--ink);color:var(--paper);}
+  .why .eyebrow{background:rgba(200,155,60,.15);}
+  .why h2{color:var(--paper);font-size:38px;margin-bottom:16px;}
+  .why-sub{color:#B9C4CD;font-size:17px;max-width:560px;margin-bottom:56px;}
+  .why-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:2px;
+    background:rgba(255,255,255,.08);
+    border-radius:18px;
+    overflow:hidden;
+  }
+  .why-item{
+    background:var(--ink);
+    padding:38px 26px;
+  }
+  .why-item .num{
+    font-family:'Cairo',sans-serif;
+    font-size:14px;
+    color:var(--gold);
+    font-weight:700;
+    margin-bottom:18px;
+  }
+  .why-item h3{
+    color:var(--paper);
+    font-size:18px;
+    margin-bottom:10px;
+    font-family:'Cairo',sans-serif;
+  }
+  .why-item p{color:#B9C4CD;font-size:14.5px;}
+
+  /* ===== CONTACT ===== */
+  .contact-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:60px;
+    align-items:start;
+  }
+  .contact-info h2{font-size:38px;margin-bottom:18px;}
+  .contact-info p{color:var(--ink-soft);font-size:17px;margin-bottom:32px;max-width:460px;}
+  .whatsapp-box{
+    display:flex;
+    align-items:center;
+    gap:16px;
+    background:var(--sage-light);
+    padding:20px 24px;
+    border-radius:16px;
+    margin-bottom:16px;
+  }
+  .whatsapp-box .ic{
+    width:44px;height:44px;
+    background:var(--sage);
+    color:var(--white);
+    border-radius:12px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:20px;
+    flex-shrink:0;
+  }
+  .whatsapp-box strong{font-family:'Cairo',sans-serif;display:block;font-size:15px;}
+  .whatsapp-box span{font-size:14px;color:var(--ink-soft);}
+
+  form{
+    background:var(--white);
+    border:1px solid var(--line);
+    border-radius:20px;
+    padding:40px;
+  }
+  .field{margin-bottom:20px;}
+  .field label{
+    display:block;
+    font-size:14px;
+    font-weight:600;
+    margin-bottom:8px;
+    color:var(--ink-soft);
+  }
+  .field input, .field select{
+    width:100%;
+    padding:13px 16px;
+    border-radius:10px;
+    border:1px solid var(--line);
+    background:var(--paper);
+    font-family:'IBM Plex Sans Arabic',sans-serif;
+    font-size:15px;
+    color:var(--ink);
+    outline:none;
+    transition:border-color .2s;
+  }
+  .field input:focus, .field select:focus{border-color:var(--gold);}
+  form .btn{width:100%;font-size:16px;padding:15px;margin-top:8px;}
+
+  /* ===== FOOTER ===== */
+  footer{
+    background:var(--paper-2);
+    border-top:1px solid var(--line);
+    padding:56px 0 28px;
+  }
+  .footer-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    flex-wrap:wrap;
+    gap:40px;
+    margin-bottom:40px;
+  }
+  .footer-brand .logo-mark{height:34px;width:auto;object-fit:contain;display:block;}
+  .footer-brand p{color:var(--ink-soft);font-size:14.5px;margin-top:12px;max-width:280px;}
+  .footer-links{display:flex;gap:64px;flex-wrap:wrap;}
+  .footer-col h4{
+    font-family:'Cairo',sans-serif;
+    font-size:15px;
+    margin-bottom:16px;
+  }
+  .footer-col ul{display:flex;flex-direction:column;gap:10px;}
+  .footer-col a{color:var(--ink-soft);font-size:14.5px;}
+  .footer-col a:hover{color:var(--gold);}
+  .footer-bottom{
+    border-top:1px solid var(--line);
+    padding-top:24px;
+    display:flex;
+    justify-content:space-between;
+    color:var(--ink-soft);
+    font-size:13.5px;
+    flex-wrap:wrap;
+    gap:12px;
+  }
+  .social{display:flex;gap:12px;}
+  .social a{
+    width:34px;height:34px;
+    border-radius:9px;
+    background:var(--white);
+    border:1px solid var(--line);
+    display:flex;align-items:center;justify-content:center;
+    font-size:14px;
+  }
+
+  /* ===== WHATSAPP (floating + inline) ===== */
+  .wa-float{
+    position:fixed;
+    bottom:26px;
+    left:26px;
+    z-index:90;
+    width:58px;height:58px;
+    border-radius:50%;
+    background:var(--sage);
+    color:var(--white);
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 10px 30px rgba(20,36,51,.28);
+    transition:transform .2s ease;
+  }
+  .wa-float:hover{transform:translateY(-3px) scale(1.04);}
+  .wa-float svg{width:28px;height:28px;}
+  .wa-float .ping{
+    position:absolute;inset:0;
+    border-radius:50%;
+    background:var(--sage);
+    opacity:.55;
+    animation:ping 2.4s ease-out infinite;
+  }
+  @keyframes ping{
+    0%{transform:scale(1);opacity:.5;}
+    100%{transform:scale(1.9);opacity:0;}
+  }
+  @media (prefers-reduced-motion: reduce){ .wa-float .ping{animation:none;} }
+  @media (max-width:900px){ .wa-float{width:52px;height:52px;bottom:18px;left:18px;} }
+
+  /* ===== STATS STRIP ===== */
+  .stats-strip{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:24px;
+    margin-top:36px;
+    padding-top:28px;
+    border-top:1px solid var(--line);
+  }
+  .stat-item{text-align:center;}
+  .stat-num{
+    font-family:'Cairo',sans-serif;
+    font-weight:900;
+    font-size:32px;
+    color:var(--gold);
+    margin-bottom:4px;
+  }
+  .stat-label{
+    font-size:13.5px;
+    color:var(--ink-soft);
+    font-weight:600;
+  }
+  @media (max-width:600px){
+    .stats-strip{grid-template-columns:1fr;gap:16px;}
+  }
+
+  .form-status{
+    margin-top:14px;
+    font-size:13.5px;
+    color:var(--sage);
+    display:none;
+  }
+  .form-status.show{display:block;}
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width:900px){
+    nav{
+      display:block;
+      position:absolute;
+      top:100%;left:0;right:0;
+      background:var(--paper);
+      border-bottom:1px solid var(--line);
+      max-height:0;
+      overflow:hidden;
+      transition:max-height .3s ease;
+    }
+    nav.mobile-open{max-height:400px;}
+    nav ul{
+      flex-direction:column;
+      gap:0;
+      padding:8px 32px 20px;
+    }
+    nav ul li{border-bottom:1px solid var(--line);}
+    nav ul li:last-child{border-bottom:none;}
+    nav a{display:block;padding:14px 0;font-size:16px;}
+    .nav-cta .btn-ghost{display:none;}
+    .nav-cta .btn-primary{padding:10px 18px;font-size:14px;}
+    .menu-toggle{display:flex;}
+    .menu-toggle.active span:nth-child(1){transform:translateY(7.5px) rotate(45deg);}
+    .menu-toggle.active span:nth-child(2){opacity:0;}
+    .menu-toggle.active span:nth-child(3){transform:translateY(-7.5px) rotate(-45deg);}
+    .menu-toggle span{transition:transform .2s ease, opacity .2s ease;}
+
+    .hero-grid, .about-grid, .contact-grid{grid-template-columns:1fr;}
+    .hero{padding-top:140px;padding-bottom:80px;}
+    .hero h1{font-size:36px;}
+    .hero p.lead{max-width:100%;}
+    .hero-actions{flex-direction:column;align-items:stretch;}
+    .hero-actions .btn{text-align:center;}
+    .star-stage{max-width:300px;margin-top:40px;}
+    .subject-row{grid-template-columns:1fr;}
+    .subject-card{border-left:none;border-bottom:1px solid var(--line);}
+    .subject-card:last-child{border-bottom:none;}
+    .why-grid{grid-template-columns:1fr 1fr;}
+    section{padding:64px 0;}
+    .about-visual{aspect-ratio:16/10;order:-1;}
+    form{padding:28px 24px;}
+    .container{padding:0 22px;}
+    .nav-wrap{padding:14px 22px;position:relative;}
+  }
+  @media (max-width:640px){
+    .hero h1{font-size:30px;}
+    .hero p.lead{font-size:16.5px;}
+    .about h2, .subjects-header h2, .why h2, .contact-info h2{font-size:28px;}
+    .why-grid{grid-template-columns:1fr;}
+    .footer-top{flex-direction:column;gap:28px;}
+    .footer-links{gap:40px;}
+    .footer-bottom{flex-direction:column;text-align:center;}
+    .wa-float{width:50px;height:50px;bottom:16px;left:16px;}
+    .wa-float svg{width:24px;height:24px;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav-wrap">
+    <div class="logo">
+      <img class="logo-mark" src="etqan-logo.png" alt="إتقان">
+    </div>
+    <nav>
+      <ul>
+        <li><a href="#home">الرئيسية</a></li>
+        <li><a href="#about">من نحن</a></li>
+        <li><a href="#subjects">الدروس</a></li>
+        <li><a href="#why">لماذا إتقان</a></li>
+        <li><a href="#contact">تواصل معنا</a></li>
+      </ul>
+    </nav>
+    <div class="nav-cta">
+      <div class="login-menu" id="loginMenu">
+        <button class="login-menu-btn" id="loginMenuBtn" type="button">تسجيل الدخول ▾</button>
+        <div class="login-dropdown">
+          <a href="login-student.html">دخول الطالب</a>
+          <a href="login-teacher.html">دخول المدرّس</a>
+          <a href="login-admin.html">دخول المدير العام</a>
+        </div>
+      </div>
+      <a href="#" id="navTrialBtn" class="btn btn-primary" target="_blank" rel="noopener">احجز درسك التجريبي</a>
+    </div>
+    <div class="menu-toggle"><span></span><span></span><span></span></div>
+  </div>
+</header>
+
+<section class="hero" id="home">
+  <div class="container hero-grid">
+    <div>
+      <span class="eyebrow">دروس تأسيسية أونلاين</span>
+      <h1>الإتقان يبدأ<br>من <span>الأساس</span></h1>
+      <p class="lead">دروس تأسيسية أونلاين في الرياضيات واللغة الإنجليزية واللغة العربية، لبناء فهم راسخ يصمد أمام أي مرحلة قادمة — مش مجرد حفظ يزول.</p>
+      <div class="hero-actions">
+        <a href="#" id="heroTrialBtn" class="btn btn-primary" target="_blank" rel="noopener">ابدأ الدرس التجريبي مجانًا</a>
+        <a href="#subjects" class="btn btn-ghost">شوف الدروس</a>
+      </div>
+      <div class="hero-note">دروس مباشرة، مش تسجيلات جاهزة</div>
+    </div>
+    <div>
+      <div class="star-stage" id="starStage">
+        <!-- blocks positioned to form an assembling 8-point foundation pattern -->
+        <div class="block" style="width:15%;height:15%;top:42.5%;left:42.5%;background:var(--ink);transition-delay:.05s;"></div>
+        <div class="block gold" style="width:13%;height:13%;top:20%;left:43.5%;transition-delay:.15s;"></div>
+        <div class="block gold" style="width:13%;height:13%;top:66.5%;left:43.5%;transition-delay:.15s;"></div>
+        <div class="block sage" style="width:13%;height:13%;top:43.5%;left:20%;transition-delay:.2s;"></div>
+        <div class="block sage" style="width:13%;height:13%;top:43.5%;left:66.5%;transition-delay:.2s;"></div>
+        <div class="block" style="width:10%;height:10%;top:29%;left:29%;transform-origin:center;transition-delay:.3s;"></div>
+        <div class="block" style="width:10%;height:10%;top:29%;left:61%;transition-delay:.3s;"></div>
+        <div class="block" style="width:10%;height:10%;top:61%;left:29%;transition-delay:.35s;"></div>
+        <div class="block" style="width:10%;height:10%;top:61%;left:61%;transition-delay:.35s;"></div>
+        <div class="block gold" style="width:8%;height:8%;top:8%;left:46%;transition-delay:.45s;"></div>
+        <div class="block gold" style="width:8%;height:8%;top:84%;left:46%;transition-delay:.45s;"></div>
+        <div class="block sage" style="width:8%;height:8%;top:46%;left:8%;transition-delay:.5s;"></div>
+        <div class="block sage" style="width:8%;height:8%;top:46%;left:84%;transition-delay:.5s;"></div>
+      </div>
+      <p class="star-caption">من قطعة أساس واحدة.. يتشكّل الإتقان</p>
+    </div>
+  </div>
+</section>
+
+<section class="about" id="about">
+  <div class="container about-grid">
+    <div class="about-visual reveal">
+      <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=800&auto=format&fit=crop" alt="طالب يدرس أونلاين">
+      <span class="tag">تعلّم من أي مكان</span>
+    </div>
+    <div>
+      <span class="eyebrow">من نحن</span>
+      <h2 class="reveal">أساس تبنيه صح.. مايتزعزعش</h2>
+      <p class="body-text reveal">إتقان مؤسسة تعليمية أونلاين، بنؤمن إن أي مستوى متقدم لازم يتبني على أساس واضح ومتين. مش بنركّز على الحفظ السريع، إحنا بنركّز على الفهم اللي يفضل معاك في كل مرحلة جاية. دروسنا مصمّمة خصيصًا للمرحلة التأسيسية، بمتابعة قريبة من كل طالب.</p>
+      <div class="fact-list">
+        <div class="fact-item reveal">
+          <div class="fact-icon">✓</div>
+          <div class="fact-text"><strong>معلمون متخصصون في التأسيس</strong><span>مش تدريس عام، خبرة حقيقية في بناء الأساس من الصفر</span></div>
+        </div>
+        <div class="fact-item reveal">
+          <div class="fact-icon">↻</div>
+          <div class="fact-text"><strong>متابعة دورية لأولياء الأمور</strong><span>تقرير واضح عن تقدّم الطالب بعد كل فترة</span></div>
+        </div>
+        <div class="fact-item reveal">
+          <div class="fact-icon">◎</div>
+          <div class="fact-text"><strong>خطة مبنية على مستوى الطالب فعليًا</strong><span>مش منهج ثابت للجميع، كل طالب وليه خطته</span></div>
+        </div>
+      </div>
+      <div class="stats-strip">
+        <div class="stat-item reveal">
+          <div class="stat-num">+300</div>
+          <div class="stat-label">طالب اتبنى أساسهم صح</div>
+        </div>
+        <div class="stat-item reveal">
+          <div class="stat-num">3</div>
+          <div class="stat-label">مواد تأسيسية أساسية</div>
+        </div>
+        <div class="stat-item reveal">
+          <div class="stat-num">%95</div>
+          <div class="stat-label">رضا أولياء الأمور</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="subjects" id="subjects">
+  <div class="container">
+    <div class="subjects-header">
+      <span class="eyebrow">الدروس التأسيسية</span>
+      <h2 class="reveal">ثلاث ركائز.. أساس واحد</h2>
+      <p class="reveal">كل مادة ليها منهج مصمم يراعي إن الطالب لسه بيتأسس فيها، مش بيراجع فيها.</p>
+    </div>
+    <div class="subject-row">
+      <div class="subject-card reveal">
+        <div class="subject-icon">Σ</div>
+        <h3>الرياضيات</h3>
+        <p>من الأرقام للمنطق، نبني تفكير رياضي سليم خطوة بخطوة، من غير تسرّع.</p>
+        <div class="tags"><span>عمليات حسابية</span><span>حل مسائل</span><span>تفكير منطقي</span></div>
+      </div>
+      <div class="subject-card reveal">
+        <div class="subject-icon">Ab</div>
+        <h3>اللغة الإنجليزية</h3>
+        <p>قواعد أساسية، محادثة بسيطة، وثقة في التعامل مع اللغة من أول درس.</p>
+        <div class="tags"><span>قواعد</span><span>محادثة</span><span>مفردات</span></div>
+      </div>
+      <div class="subject-card reveal">
+        <div class="subject-icon">ع</div>
+        <h3>اللغة العربية</h3>
+        <p>نحو، إملاء، وتعبير، بأسلوب بيقرّب اللغة للطالب مش بيعقّدها عليه.</p>
+        <div class="tags"><span>نحو وإملاء</span><span>تعبير</span><span>قراءة</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="why" id="why">
+  <div class="container">
+    <span class="eyebrow">لماذا إتقان</span>
+    <h2 class="reveal">مش كل دروس أونلاين زي بعض</h2>
+    <p class="why-sub reveal">فرقنا مش في الشكل، فرقنا في طريقة بناء الفهم من أول درس.</p>
+    <div class="why-grid">
+      <div class="why-item reveal">
+        <div class="num">مباشر</div>
+        <h3>دروس أونلاين حية</h3>
+        <p>مش تسجيلات جاهزة، تفاعل حقيقي مع المعلم لحظة بلحظة.</p>
+      </div>
+      <div class="why-item reveal">
+        <div class="num">متخصص</div>
+        <h3>معلمو تأسيس فقط</h3>
+        <p>خبرة مركّزة في المرحلة التأسيسية تحديدًا، مش تدريس عام.</p>
+      </div>
+      <div class="why-item reveal">
+        <div class="num">شفاف</div>
+        <h3>تقرير تقدّم دوري</h3>
+        <p>أولياء الأمور بيشوفوا تقدّم ابنهم أول بأول، مش في آخر الترم.</p>
+      </div>
+      <div class="why-item reveal">
+        <div class="num">مرن</div>
+        <h3>خطة على مستوى الطالب</h3>
+        <p>البداية من حيث الطالب فعلًا، مش من حيث المفروض يكون.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="contact" id="contact">
+  <div class="container contact-grid">
+    <div class="contact-info">
+      <span class="eyebrow">ابدأ الآن</span>
+      <h2 class="reveal">ابدأ رحلة الإتقان</h2>
+      <p class="reveal">احجز درس تجريبي مجاني، وشوف الفرق بنفسك من أول حصة.</p>
+      <a class="whatsapp-box reveal" id="waDirectLink" href="#" target="_blank" rel="noopener">
+        <div class="ic">✆</div>
+        <div><strong>تواصل مباشر على واتساب</strong><span>رد سريع خلال دقائق في أوقات العمل</span></div>
+      </a>
+    </div>
+    <form class="reveal" id="bookingForm">
+      <div class="field">
+        <label>الاسم</label>
+        <input type="text" id="fName" placeholder="اسمك بالكامل" required>
+      </div>
+      <div class="field">
+        <label>رقم الهاتف / واتساب</label>
+        <input type="tel" id="fPhone" placeholder="01xxxxxxxxx" required>
+      </div>
+      <div class="field">
+        <label>المادة المطلوبة</label>
+        <select id="fSubject" required>
+          <option value="">اختر المادة</option>
+          <option>الرياضيات</option>
+          <option>اللغة الإنجليزية</option>
+          <option>اللغة العربية</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" type="submit">احجز الدرس التجريبي عبر واتساب</button>
+      <p class="form-status" id="formStatus">هيتم تحويلك لواتساب برسالتك جاهزة، تمام يبقى بس تدوس إرسال 👍</p>
+    </form>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <img class="logo-mark" src="etqan-logo.png" alt="إتقان">
+        <p>دروس تأسيسية أونلاين في الرياضيات واللغة الإنجليزية والعربية، عشان كل طالب يبني أساسه صح.</p>
+      </div>
+      <div class="footer-links">
+        <div class="footer-col">
+          <h4>روابط</h4>
+          <ul>
+            <li><a href="#home">الرئيسية</a></li>
+            <li><a href="#about">من نحن</a></li>
+            <li><a href="#subjects">الدروس</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>تواصل</h4>
+          <ul>
+            <li><a href="#contact">احجز درس تجريبي</a></li>
+            <li><a href="#contact">واتساب</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 إتقان. جميع الحقوق محفوظة.</span>
+      <div class="social">
+        <a href="#">f</a>
+        <a href="#">in</a>
+        <a href="#">ig</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<a class="wa-float" id="waFloat" href="#" target="_blank" rel="noopener" aria-label="تواصل عبر واتساب">
+  <span class="ping"></span>
+  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.15-1.7-.85-2-.95-.27-.1-.46-.15-.66.15-.2.3-.76.94-.93 1.14-.17.2-.34.22-.64.07-.3-.15-1.26-.46-2.4-1.47-.9-.8-1.5-1.78-1.68-2.08-.17-.3-.02-.46.13-.61.14-.14.3-.34.45-.51.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.66-1.6-.9-2.18-.24-.58-.48-.5-.66-.5h-.56c-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.47s1.07 2.87 1.22 3.07c.15.2 2.1 3.2 5.08 4.5.71.3 1.26.49 1.7.62.71.23 1.36.2 1.87.12.57-.08 1.7-.7 1.94-1.37.24-.68.24-1.26.17-1.38-.07-.12-.27-.2-.57-.35z"/><path d="M12.02 2C6.5 2 2.03 6.44 2.03 11.9c0 1.86.51 3.6 1.4 5.1L2 22l5.15-1.35a10 10 0 0 0 4.87 1.24h.01c5.52 0 9.99-4.44 9.99-9.9C22 6.44 17.54 2 12.02 2zm0 18.06h-.01c-1.6 0-3.16-.43-4.52-1.24l-.32-.19-3.36.88.9-3.26-.21-.34a8.16 8.16 0 0 1-1.26-4.4c0-4.5 3.68-8.16 8.22-8.16 4.53 0 8.2 3.66 8.2 8.16 0 4.5-3.67 8.55-8.24 8.55z"/></svg>
+</a>
+
+<script>
+  // ===== WhatsApp config =====
+  // غيّر الرقم ده برقم واتساب المؤسسة (بصيغة دولية من غير + أو أصفار زيادة)
+  const WHATSAPP_NUMBER = "201007172029";
+
+  function buildWaLink(message){
+    return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+  }
+
+  // زرار الواتساب العائم + بوكس التواصل المباشر: رسالة عامة جاهزة
+  const generalMsg = "السلام عليكم، حابب أعرف تفاصيل أكتر عن دروس إتقان التأسيسية 🌱";
+  document.getElementById('waFloat').href = buildWaLink(generalMsg);
+  document.getElementById('waDirectLink').href = buildWaLink(generalMsg);
+
+  // أزرار "احجز الدرس التجريبي" في الهيدر والهيرو: تفتح واتساب على طول برسالة حجز تجربة
+  const trialMsg = "السلام عليكم، حابب أحجز درس تجريبي مجاني في دروس إتقان التأسيسية 🙌";
+  const heroTrialBtn = document.getElementById('heroTrialBtn');
+  const navTrialBtn = document.getElementById('navTrialBtn');
+  if(heroTrialBtn) heroTrialBtn.href = buildWaLink(trialMsg);
+  if(navTrialBtn) navTrialBtn.href = buildWaLink(trialMsg);
+
+  // فورم الحجز: تبني رسالة فيها بيانات الطالب وتفتح واتساب
+  const bookingForm = document.getElementById('bookingForm');
+  bookingForm.addEventListener('submit', function(e){
+    e.preventDefault();
+    const name = document.getElementById('fName').value.trim();
+    const phone = document.getElementById('fPhone').value.trim();
+    const subject = document.getElementById('fSubject').value;
+
+    const msg = `السلام عليكم، أنا ${name} 👋
+حابب أحجز درس تجريبي مجاني في: ${subject}
+رقم التواصل: ${phone}`;
+
+    const status = document.getElementById('formStatus');
+    status.classList.add('show');
+
+    window.open(buildWaLink(msg), '_blank');
+  });
+</script>
+
+<script>
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        e.target.classList.add('in');
+      }
+    });
+  }, {threshold:.15});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+  const starStage = document.getElementById('starStage');
+  const starIO = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); } });
+  }, {threshold:.3});
+  starIO.observe(starStage);
+
+  // قائمة تسجيل الدخول المنسدلة
+  const loginMenu = document.getElementById('loginMenu');
+  const loginMenuBtn = document.getElementById('loginMenuBtn');
+  loginMenuBtn.addEventListener('click', (e)=>{
+    e.stopPropagation();
+    loginMenu.classList.toggle('open');
+  });
+  document.addEventListener('click', (e)=>{
+    if(!loginMenu.contains(e.target)) loginMenu.classList.remove('open');
+  });
+
+  // mobile menu toggle
+  const menuToggle = document.querySelector('.menu-toggle');
+  const navEl = document.querySelector('nav');
+  menuToggle.addEventListener('click', ()=>{
+    navEl.classList.toggle('mobile-open');
+    menuToggle.classList.toggle('active');
+  });
+  // اقفل المنيو أوتوماتيك لما المستخدم يدوس على أي لينك جوّاها
+  navEl.querySelectorAll('a').forEach(link=>{
+    link.addEventListener('click', ()=>{
+      navEl.classList.remove('mobile-open');
+      menuToggle.classList.remove('active');
+    });
+  });
+</script>
+
+</body>
+</html>

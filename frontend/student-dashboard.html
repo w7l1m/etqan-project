@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة الطالب | إتقان</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800;900&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============ Design tokens ============ */
+:root{
+  --ink:#14213D; --ink-soft:#4B5A72; --ink-faint:#8A96A8;
+  --gold:#C9973E; --gold-deep:#A97C2C; --gold-light:#FBF1DD;
+  --sage:#3F6D5C; --sage-light:#E6F0EA;
+  --danger:#B33F3F; --danger-light:#FBEAEA;
+  --info:#2E5FA3; --info-light:#E9F1FB;
+  --paper:#F7F5F0; --surface:#FFFFFF; --surface-2:#F1EEE6;
+  --line:#E4E1D6; --line-soft:#EDEAE0;
+  --shadow-sm:0 1px 2px rgba(20,33,61,.05), 0 1px 1px rgba(20,33,61,.04);
+  --shadow-md:0 8px 24px -8px rgba(20,33,61,.12), 0 2px 8px rgba(20,33,61,.05);
+  --shadow-lg:0 20px 48px -12px rgba(20,33,61,.18);
+  --radius:18px; --radius-sm:12px; --radius-lg:22px;
+  --sidebar-w:264px;
+}
+html[data-theme="dark"]{
+  --ink:#F1F3F8; --ink-soft:#B7C0CF; --ink-faint:#76829A;
+  --gold:#E3B15C; --gold-deep:#C9973E; --gold-light:#2B2313;
+  --sage:#6FBE9D; --sage-light:#173028;
+  --danger:#E08080; --danger-light:#3A2020;
+  --info:#7CA9E0; --info-light:#1B2A3D;
+  --paper:#0D131F; --surface:#161D2B; --surface-2:#1C2434;
+  --line:#262F41; --line-soft:#20283A;
+  --shadow-sm:0 1px 2px rgba(0,0,0,.3);
+  --shadow-md:0 8px 24px -8px rgba(0,0,0,.5), 0 2px 8px rgba(0,0,0,.3);
+  --shadow-lg:0 24px 60px -16px rgba(0,0,0,.6);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'IBM Plex Sans Arabic',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;transition:background .25s ease,color .25s ease;}
+h1,h2,h3,h4,.brand span,.nav-item span,.btn,.tab{font-family:'Cairo',sans-serif;}
+img{max-width:100%;display:block;}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;}
+a{color:inherit;text-decoration:none;}
+::selection{background:var(--gold-light);color:var(--gold-deep);}
+
+/* ============ Layout shell ============ */
+.shell{display:flex;min-height:100vh;}
+.sidebar{
+  width:var(--sidebar-w);flex-shrink:0;background:var(--surface);border-left:1px solid var(--line);
+  position:sticky;top:0;height:100vh;display:flex;flex-direction:column;padding:22px 16px;z-index:40;
+  transition:transform .3s ease;
+}
+.brand{display:flex;align-items:center;gap:10px;padding:6px 8px 22px;}
+.brand .logo{height:34px;width:auto;object-fit:contain;display:block;}
+.nav-group{margin-bottom:18px;}
+.nav-label{font-size:11px;color:var(--ink-faint);font-weight:700;padding:0 10px 8px;letter-spacing:.4px;text-transform:uppercase;}
+.nav-item{
+  display:flex;align-items:center;gap:12px;padding:10.5px 12px;border-radius:12px;color:var(--ink-soft);
+  font-weight:600;font-size:14.5px;margin-bottom:3px;transition:background .18s,color .18s;position:relative;
+}
+.nav-item svg{width:19px;height:19px;flex-shrink:0;}
+.nav-item:hover{background:var(--surface-2);color:var(--ink);}
+.nav-item.active{background:var(--gold-light);color:var(--gold-deep);}
+.nav-item.active svg{stroke:var(--gold-deep);}
+.nav-item .badge{margin-right:auto;background:var(--danger);color:#fff;font-size:10.5px;font-weight:800;padding:1px 7px;border-radius:100px;}
+.sidebar-footer{margin-top:auto;padding-top:16px;border-top:1px solid var(--line-soft);}
+.user-chip{display:flex;align-items:center;gap:10px;padding:10px;border-radius:14px;}
+.user-chip:hover{background:var(--surface-2);}
+.avatar{width:38px;height:38px;border-radius:11px;background:linear-gradient(155deg,var(--sage),#2c5346);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:14px;flex-shrink:0;}
+.user-chip .who{overflow:hidden;}
+.user-chip .who strong{display:block;font-size:13.5px;font-family:'Cairo';font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.user-chip .who span{font-size:11.5px;color:var(--ink-faint);}
+
+.main{flex:1;min-width:0;display:flex;flex-direction:column;}
+.topbar{
+  position:sticky;top:0;z-index:30;background:color-mix(in srgb, var(--surface) 88%, transparent);
+  backdrop-filter:blur(10px);border-bottom:1px solid var(--line);
+  display:flex;align-items:center;gap:14px;padding:14px 28px;
+}
+.search-box{
+  flex:1;max-width:420px;display:flex;align-items:center;gap:9px;background:var(--surface-2);
+  border:1px solid transparent;border-radius:12px;padding:9px 14px;color:var(--ink-faint);transition:border-color .15s;
+}
+.search-box:focus-within{border-color:var(--gold);background:var(--surface);}
+.search-box input{background:none;border:none;outline:none;color:var(--ink);font-size:13.5px;width:100%;font-family:inherit;}
+.search-box svg{width:17px;height:17px;flex-shrink:0;}
+.icon-btn{
+  width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+  color:var(--ink-soft);position:relative;transition:background .15s,color .15s;flex-shrink:0;
+}
+.icon-btn:hover{background:var(--surface-2);color:var(--ink);}
+.icon-btn svg{width:19px;height:19px;}
+.icon-btn .dot{position:absolute;top:8px;left:8px;width:8px;height:8px;border-radius:50%;background:var(--danger);border:2px solid var(--surface);}
+.icon-btn.modal-close svg{transition:transform .18s;}
+.icon-btn.modal-close:hover svg{transform:rotate(90deg);}
+.icon-btn.modal-close:active{transform:scale(.88);}
+.toast .x{margin-right:auto;color:var(--ink-faint);flex-shrink:0;display:flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:8px;cursor:pointer;transition:background .15s,color .15s,transform .12s;}
+.toast .x:hover{background:var(--surface-2);color:var(--ink);}
+.toast .x:active{transform:scale(.85);}
+.menu-btn{display:none;}
+.content{padding:26px 28px 90px;max-width:1360px;width:100%;margin:0 auto;}
+
+/* ============ Typography helpers ============ */
+.page-title{font-size:24px;font-weight:800;margin-bottom:4px;}
+.page-sub{color:var(--ink-soft);font-size:14px;margin-bottom:26px;}
+.section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.section-head h2{font-size:17px;font-weight:800;}
+.link-more{font-size:13px;font-weight:700;color:var(--gold-deep);display:flex;align-items:center;gap:4px;}
+
+/* ============ Cards & grid ============ */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow-sm);transition:box-shadow .2s, transform .2s;}
+.card.hoverable:hover{box-shadow:var(--shadow-md);transform:translateY(-2px);}
+.grid{display:grid;gap:18px;}
+.grid-4{grid-template-columns:repeat(4,1fr);}
+.grid-3{grid-template-columns:repeat(3,1fr);}
+.grid-2{grid-template-columns:repeat(2,1fr);}
+@media(max-width:1180px){.grid-4{grid-template-columns:repeat(2,1fr);} .grid-3{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:640px){.grid-4,.grid-3,.grid-2{grid-template-columns:1fr;}}
+
+/* Hero */
+.hero{
+  background:linear-gradient(120deg,var(--ink) 0%, #1c2f52 60%, #223a63 100%);
+  border-radius:var(--radius-lg);padding:30px 32px;color:#fff;position:relative;overflow:hidden;margin-bottom:22px;
+  display:grid;grid-template-columns:1.3fr 1fr;gap:24px;align-items:center;
+}
+html[data-theme="dark"] .hero{background:linear-gradient(120deg,#0c1424 0%, #131f36 60%, #182746 100%);}
+.hero::before{content:"";position:absolute;inset:0;background:radial-gradient(600px 300px at 85% 20%, rgba(201,151,62,.28), transparent 70%);}
+.hero-content{position:relative;z-index:1;}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.1);padding:6px 13px;border-radius:100px;font-size:12.5px;font-weight:700;margin-bottom:14px;}
+.hero h1{font-size:25px;font-weight:800;margin-bottom:8px;}
+.hero p{font-size:14.5px;opacity:.82;max-width:440px;line-height:1.7;}
+.hero-stats{position:relative;z-index:1;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.hero-stat{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:14px 12px;text-align:center;}
+.hero-stat .num{font-family:'Cairo';font-size:21px;font-weight:800;display:block;}
+.hero-stat .lbl{font-size:11px;opacity:.75;margin-top:2px;}
+@media(max-width:900px){.hero{grid-template-columns:1fr;}}
+@media(max-width:640px){.hero-stats{grid-template-columns:repeat(3,1fr);} .hero{padding:24px 20px;}}
+
+/* Stat cards */
+.stat-card{padding:20px;display:flex;flex-direction:column;gap:10px;}
+.stat-card .top-row{display:flex;align-items:center;justify-content:space-between;}
+.stat-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.stat-icon svg{width:20px;height:20px;}
+.stat-card .value{font-family:'Cairo';font-size:24px;font-weight:800;}
+.stat-card .label{font-size:12.5px;color:var(--ink-soft);}
+.trend{font-size:11.5px;font-weight:700;display:flex;align-items:center;gap:3px;}
+.trend.up{color:var(--sage);}
+.trend.down{color:var(--danger);}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;gap:7px;font-weight:700;font-size:13.5px;padding:10px 18px;border-radius:11px;transition:all .15s;white-space:nowrap;}
+.btn svg{width:16px;height:16px;}
+.btn-primary{background:linear-gradient(155deg,var(--gold),var(--gold-deep));color:#fff;box-shadow:0 6px 16px -6px rgba(201,151,62,.55);}
+.btn-primary:hover{filter:brightness(1.06);transform:translateY(-1px);}
+.btn-secondary{background:var(--surface-2);color:var(--ink);border:1px solid var(--line);}
+.btn-secondary:hover{background:var(--line-soft);}
+.btn-ghost{color:var(--ink-soft);}
+.btn-ghost:hover{color:var(--ink);}
+.btn-sm{padding:7px 13px;font-size:12.5px;border-radius:9px;}
+.btn-danger{background:var(--danger-light);color:var(--danger);}
+
+/* Progress bar */
+.progress-track{width:100%;height:8px;background:var(--surface-2);border-radius:100px;overflow:hidden;}
+.progress-fill{height:100%;border-radius:100px;background:linear-gradient(90deg,var(--gold),var(--sage));transition:width .6s ease;}
+
+/* Course card */
+.course-card{overflow:hidden;display:flex;flex-direction:column;}
+.course-thumb{height:132px;position:relative;background:linear-gradient(135deg,var(--info-light),var(--surface-2));display:flex;align-items:center;justify-content:center;}
+.course-thumb svg{width:44px;height:44px;color:var(--info);opacity:.55;}
+.course-thumb .pct-badge{position:absolute;top:10px;left:10px;background:rgba(20,33,61,.72);backdrop-filter:blur(4px);color:#fff;font-size:11px;font-weight:700;padding:4px 9px;border-radius:100px;}
+.course-body{padding:16px 16px 18px;display:flex;flex-direction:column;gap:10px;flex:1;}
+.course-body h4{font-size:14.5px;font-weight:700;line-height:1.4;}
+.teacher-row{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--ink-soft);}
+.teacher-row .mini-av{width:19px;height:19px;border-radius:6px;background:var(--sage-light);color:var(--sage);display:flex;align-items:center;justify-content:center;font-size:9.5px;font-weight:800;}
+.course-meta{display:flex;justify-content:space-between;font-size:11.5px;color:var(--ink-faint);}
+
+/* Tabs (pill) */
+.tabs{display:flex;gap:6px;background:var(--surface-2);padding:5px;border-radius:13px;width:fit-content;margin-bottom:20px;flex-wrap:wrap;}
+.tab{padding:8px 16px;border-radius:9px;font-size:13px;font-weight:700;color:var(--ink-soft);}
+.tab.active{background:var(--surface);color:var(--ink);box-shadow:var(--shadow-sm);}
+
+/* List rows (tasks/announcements) */
+.list-row{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid var(--line-soft);}
+.list-row:last-child{border-bottom:none;}
+.row-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.row-icon svg{width:17px;height:17px;}
+.row-main{flex:1;min-width:0;}
+.row-main p{font-size:13.5px;font-weight:600;margin-bottom:2px;}
+.row-main span{font-size:11.5px;color:var(--ink-faint);}
+.chip{font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:100px;flex-shrink:0;}
+.chip.pending{background:var(--gold-light);color:var(--gold-deep);}
+.chip.done{background:var(--sage-light);color:var(--sage);}
+.chip.late{background:var(--danger-light);color:var(--danger);}
+.chip.info{background:var(--info-light);color:var(--info);}
+input,textarea,select{font-family:inherit;}
+
+/* Skeleton */
+.skeleton{position:relative;overflow:hidden;background:var(--surface-2);border-radius:10px;}
+.skeleton::after{content:"";position:absolute;inset:0;transform:translateX(-100%);
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent);animation:shimmer 1.3s infinite;}
+html[data-theme="dark"] .skeleton::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.06),transparent);}
+@keyframes shimmer{100%{transform:translateX(100%);}}
+
+/* Empty state */
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:50px 20px;color:var(--ink-soft);}
+.empty-state .ico{width:64px;height:64px;border-radius:18px;background:var(--surface-2);display:flex;align-items:center;justify-content:center;margin-bottom:16px;color:var(--ink-faint);}
+.empty-state .ico svg{width:30px;height:30px;}
+.empty-state h4{font-size:15px;font-weight:700;color:var(--ink);margin-bottom:5px;}
+.empty-state p{font-size:13px;max-width:300px;line-height:1.7;}
+
+/* Toasts */
+.toast-wrap{position:fixed;bottom:22px;left:22px;z-index:200;display:flex;flex-direction:column;gap:10px;}
+.toast{display:flex;align-items:center;gap:11px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow-lg);
+  border-radius:14px;padding:13px 16px;min-width:280px;max-width:340px;animation:toastIn .3s ease;}
+@keyframes toastIn{from{opacity:0;transform:translateY(10px) scale(.97);}to{opacity:1;transform:none;}}
+.toast .ic{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.toast.success .ic{background:var(--sage-light);color:var(--sage);}
+.toast.error .ic{background:var(--danger-light);color:var(--danger);}
+.toast.info .ic{background:var(--info-light);color:var(--info);}
+.toast p{font-size:13px;font-weight:600;}
+
+/* FAB */
+.fab{position:fixed;bottom:26px;left:26px;width:56px;height:56px;border-radius:18px;background:linear-gradient(155deg,var(--gold),var(--gold-deep));
+  color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 26px -8px rgba(201,151,62,.6);z-index:60;transition:transform .2s;}
+.fab:hover{transform:scale(1.06) rotate(6deg);}
+.fab svg{width:24px;height:24px;}
+
+/* Modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(10,15,25,.55);backdrop-filter:blur(3px);z-index:150;display:none;align-items:center;justify-content:center;padding:20px;}
+.modal-overlay.show{display:flex;animation:fadeIn .2s ease;}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+.modal{background:var(--surface);border-radius:20px;max-width:520px;width:100%;max-height:88vh;overflow-y:auto;box-shadow:var(--shadow-lg);animation:modalIn .25s cubic-bezier(.2,.8,.2,1);}
+@keyframes modalIn{from{opacity:0;transform:translateY(16px) scale(.97);}to{opacity:1;transform:none;}}
+.modal-head{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--line);}
+.modal-head h3{font-size:16.5px;font-weight:800;}
+.modal-body{padding:22px 24px;}
+.form-group{margin-bottom:16px;}
+.form-group label{display:block;font-size:12.5px;font-weight:700;color:var(--ink-soft);margin-bottom:7px;}
+.form-control{width:100%;padding:11px 14px;border-radius:11px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink);font-size:13.5px;transition:border-color .15s;}
+.form-control:focus{outline:none;border-color:var(--gold);}
+.dropzone{border:2px dashed var(--line);border-radius:14px;padding:26px;text-align:center;color:var(--ink-soft);font-size:13px;transition:border-color .15s,background .15s;}
+.dropzone:hover{border-color:var(--gold);background:var(--gold-light);}
+.dropzone svg{width:26px;height:26px;margin-bottom:8px;color:var(--ink-faint);}
+.modal-foot{display:flex;gap:10px;justify-content:flex-start;padding:18px 24px;border-top:1px solid var(--line);}
+
+/* video */
+.video-shell{background:#0A0F1A;border-radius:20px;overflow:hidden;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;position:relative;color:#fff;}
+.video-shell .play-btn{width:74px;height:74px;border-radius:50%;background:rgba(255,255,255,.14);border:1.5px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+.video-shell .play-btn svg{width:28px;height:28px;margin-right:-3px;}
+.video-shell .bar{position:absolute;bottom:0;left:0;right:0;padding:16px 20px;background:linear-gradient(0deg,rgba(0,0,0,.6),transparent);display:flex;align-items:center;gap:12px;font-size:12px;}
+
+/* Attachment row */
+.attach-row{display:flex;align-items:center;gap:11px;padding:11px 14px;border:1px solid var(--line);border-radius:12px;margin-bottom:8px;}
+.attach-row .fi{width:34px;height:34px;border-radius:9px;background:var(--danger-light);color:var(--danger);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.attach-row .fi svg{width:16px;height:16px;}
+.attach-row .fname{flex:1;font-size:13px;font-weight:600;}
+.attach-row .fsize{font-size:11px;color:var(--ink-faint);}
+
+/* Table */
+.table-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:13.5px;}
+th{text-align:right;font-size:11.5px;color:var(--ink-faint);font-weight:700;text-transform:uppercase;letter-spacing:.3px;padding:0 14px 10px;border-bottom:1px solid var(--line);}
+td{padding:14px;border-bottom:1px solid var(--line-soft);}
+tr:last-child td{border-bottom:none;}
+
+/* Countdown */
+.countdown{display:flex;gap:10px;}
+.countdown .box{background:var(--surface-2);border-radius:12px;padding:10px 6px;text-align:center;min-width:56px;}
+.countdown .box .n{font-family:'Cairo';font-size:19px;font-weight:800;color:var(--gold-deep);}
+.countdown .box .l{font-size:10px;color:var(--ink-faint);}
+
+/* Achievement badge */
+.badge-tile{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;padding:16px 10px;}
+.badge-tile .icon{width:56px;height:56px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:24px;}
+.badge-tile.locked{opacity:.4;filter:grayscale(1);}
+.badge-tile span{font-size:11.5px;font-weight:700;}
+
+/* Toggle switch */
+.switch{width:42px;height:24px;border-radius:100px;background:var(--surface-2);position:relative;transition:background .2s;flex-shrink:0;border:1px solid var(--line);}
+.switch::after{content:"";position:absolute;top:2px;right:2px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:transform .2s;}
+.switch.on{background:var(--sage);}
+.switch.on::after{transform:translateX(-18px);}
+
+/* Mobile bottom nav */
+.mobile-nav{display:none;}
+@media(max-width:900px){
+  .sidebar{position:fixed;right:0;top:0;transform:translateX(100%);box-shadow:var(--shadow-lg);}
+  .sidebar.open{transform:translateX(0);}
+  .menu-btn{display:flex;}
+  .content{padding:18px 16px 90px;}
+  .hero{padding:24px 20px;}
+  .topbar{padding:12px 16px;}
+  .search-box{display:none;}
+}
+.overlay-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:35;}
+.overlay-bg.show{display:block;}
+
+.fadeUp{animation:fadeUp .45s ease both;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+.view{display:none;}
+.view.active{display:block;}
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <!-- ===================== SIDEBAR ===================== -->
+  <aside class="sidebar" id="sidebar">
+    <div class="brand"><img class="logo" src="etqan-logo.png" alt="إتقان"></div>
+    <nav>
+      <div class="nav-group">
+        <div class="nav-item active" data-view="dashboard">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M9 21v-6h6v6"/></svg>
+          <span>الرئيسية</span>
+        </div>
+        <div class="nav-item" data-view="courses">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="14" rx="2.5"/><path d="M3 9h18"/><path d="M8 14h4"/></svg>
+          <span>دوراتي</span>
+        </div>
+        <div class="nav-item" data-view="homework">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 3h8l4 4v14H7z"/><path d="M15 3v4h4"/><path d="M10 12h5M10 16h5"/></svg>
+          <span>الواجبات</span><span class="badge">3</span>
+        </div>
+        <div class="nav-item" data-view="exams">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 3h6l3 4v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7z"/><path d="M9 12l2 2 4-4"/></svg>
+          <span>الاختبارات</span>
+        </div>
+        <div class="nav-item" data-view="certificates">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="5"/><path d="M8.5 12.5 7 21l5-2.5L17 21l-1.5-8.5"/></svg>
+          <span>الشهادات</span>
+        </div>
+        <div class="nav-item" data-view="profile">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4.5 5-6 8-6s6.5 1.5 8 6"/></svg>
+          <span>ملفي الشخصي</span>
+        </div>
+      </div>
+      <div class="nav-group">
+        <div class="nav-label">أدوات</div>
+        <div class="nav-item" data-view="ai" >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="4"/></svg>
+          <span>المساعد الذكي</span>
+        </div>
+        <div class="nav-item" onclick="showToast('info','هذه الميزة قيد التطوير قريبًا')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16v13H7l-3 3z"/></svg>
+          <span>اسأل المعلم</span>
+        </div>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-chip" data-view="profile" style="cursor:pointer">
+        <div class="avatar" id="sideAvatar">يو</div>
+        <div class="who"><strong id="sideName">يوسف كريم</strong><span id="sideGrade">الصف الثالث الثانوي</span></div>
+      </div>
+      <button class="nav-item" id="logoutBtn" style="width:100%;margin-top:6px;color:var(--danger)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/></svg>
+        <span>تسجيل الخروج</span>
+      </button>
+    </div>
+  </aside>
+  <div class="overlay-bg" id="overlayBg"></div>
+
+  <!-- ===================== MAIN ===================== -->
+  <div class="main">
+    <header class="topbar">
+      <button class="icon-btn menu-btn" id="menuBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        <input placeholder="ابحث عن دورة، درس، أو واجب…">
+      </div>
+      <div style="margin-right:auto;display:flex;align-items:center;gap:6px;">
+        <button class="icon-btn" id="themeToggle" title="الوضع الليلي">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        </button>
+        <button class="icon-btn" onclick="showToast('info','لا توجد إشعارات جديدة أخرى')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+          <span class="dot"></span>
+        </button>
+        <div class="avatar" id="topAvatar" style="width:36px;height:36px;font-size:13px;cursor:pointer" data-view="profile">يو</div>
+      </div>
+    </header>
+
+    <main class="content">
+
+      <!-- ============================================================ -->
+      <!-- VIEW: DASHBOARD -->
+      <!-- ============================================================ -->
+      <section class="view active" id="view-dashboard">
+        <div id="dashSkeleton"></div>
+        <div id="dashReal" style="display:none">
+          <div class="hero fadeUp">
+            <div class="hero-content">
+              <div class="hero-eyebrow">🔥 سلسلة مذاكرة 12 يومًا — استمر!</div>
+              <h1>أهلاً بيك، <span id="heroName">يوسف</span> 👋</h1>
+              <p>"النجاح مش صدفة، هو نتيجة مذاكرة يومية بسيطة ومستمرة." استكمل خطتك اليوم علشان توصل لهدفك في الرياضيات.</p>
+              <div style="display:flex;gap:10px;margin-top:18px">
+                <button class="btn btn-primary" onclick="switchView('courses')">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 3l14 9-14 9V3z"/></svg>
+                  متابعة آخر درس
+                </button>
+                <button class="btn" style="background:rgba(255,255,255,.12);color:#fff" onclick="switchView('exams')">مواعيد الامتحانات</button>
+              </div>
+            </div>
+            <div class="hero-stats">
+              <div class="hero-stat"><span class="num">68%</span><span class="lbl">نسبة الإنجاز</span></div>
+              <div class="hero-stat"><span class="num">المستوى 4</span><span class="lbl">مستواك الحالي</span></div>
+              <div class="hero-stat"><span class="num">47</span><span class="lbl">درسًا مكتملًا</span></div>
+            </div>
+          </div>
+
+          <div class="grid grid-4" style="margin-bottom:24px">
+            <div class="card stat-card hoverable fadeUp">
+              <div class="top-row">
+                <div class="stat-icon" style="background:var(--gold-light);color:var(--gold-deep)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8.5 14.5c1.5-5 3-8 3.5-11 2 2 4 6.5 4 10a5 5 0 1 1-10 0c0-1.8.8-3 1.5-4"/></svg>
+                </div>
+                <span class="trend up">+2 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M6 15l6-6 6 6"/></svg></span>
+              </div>
+              <div class="value">12 يوم</div>
+              <div class="label">سلسلة المذاكرة المتواصلة</div>
+            </div>
+            <div class="card stat-card hoverable fadeUp">
+              <div class="top-row">
+                <div class="stat-icon" style="background:var(--sage-light);color:var(--sage)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+                </div>
+              </div>
+              <div class="value">68٪</div>
+              <div class="label">نسبة التقدم الإجمالية</div>
+              <div class="progress-track"><div class="progress-fill" style="width:68%"></div></div>
+            </div>
+            <div class="card stat-card hoverable fadeUp">
+              <div class="top-row">
+                <div class="stat-icon" style="background:var(--info-light);color:var(--info)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="14" rx="2.5"/><path d="M3 9h18"/></svg>
+                </div>
+              </div>
+              <div class="value">47 درس</div>
+              <div class="label">إجمالي الدروس المكتملة</div>
+            </div>
+            <div class="card stat-card hoverable fadeUp">
+              <div class="top-row">
+                <div class="stat-icon" style="background:var(--danger-light);color:var(--danger)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="16" rx="2.5"/><path d="M8 3v4M16 3v4M3 10h18"/></svg>
+                </div>
+              </div>
+              <div class="value">الأحد 5م</div>
+              <div class="label">أقرب حصة مباشرة</div>
+            </div>
+          </div>
+
+          <div class="grid" style="grid-template-columns:1.5fr 1fr;gap:20px;margin-bottom:24px" id="mainCardsGrid">
+            <!-- Continue learning -->
+            <div class="card hoverable fadeUp" style="padding:20px">
+              <div class="section-head" style="margin-bottom:16px"><h2>أكمل من حيث توقفت</h2></div>
+              <div style="display:flex;gap:16px;align-items:center">
+                <div style="width:120px;height:80px;border-radius:14px;background:linear-gradient(135deg,var(--info-light),var(--surface-2));display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                  <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="var(--info)" stroke-width="1.8"><path d="M5 3l14 9-14 9V3z"/></svg>
+                </div>
+                <div style="flex:1;min-width:0">
+                  <h4 style="font-size:15px;font-weight:700;margin-bottom:4px">المعادلات التفاضلية — الدرس 8: طرق الحل العددي</h4>
+                  <p style="font-size:12.5px;color:var(--ink-soft);margin-bottom:10px">أ. سارة محمود · تبقى 14 دقيقة لإنهاء الدرس</p>
+                  <div class="progress-track" style="margin-bottom:10px"><div class="progress-fill" style="width:74%"></div></div>
+                  <button class="btn btn-primary btn-sm" onclick="switchView('lesson')">متابعة المشاهدة</button>
+                </div>
+              </div>
+            </div>
+            <!-- Today's tasks -->
+            <div class="card fadeUp" style="padding:20px">
+              <div class="section-head" style="margin-bottom:6px"><h2>مهام اليوم</h2><span class="chip pending">4 مهام</span></div>
+              <div class="list-row">
+                <div class="row-icon" style="background:var(--gold-light);color:var(--gold-deep)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 3h8l4 4v14H7z"/></svg></div>
+                <div class="row-main"><p>تسليم واجب الوحدة الخامسة</p><span>يتبقى 5 ساعات</span></div>
+              </div>
+              <div class="list-row">
+                <div class="row-icon" style="background:var(--info-light);color:var(--info)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 3l14 9-14 9V3z"/></svg></div>
+                <div class="row-main"><p>مشاهدة درس المصفوفات</p><span>25 دقيقة</span></div>
+              </div>
+              <div class="list-row">
+                <div class="row-icon" style="background:var(--sage-light);color:var(--sage)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg></div>
+                <div class="row-main"><p>مراجعة سريعة: نظرية فيثاغورس</p><span>10 دقائق</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-3" style="margin-bottom:24px">
+            <div class="card fadeUp" style="padding:20px">
+              <div class="section-head" style="margin-bottom:6px"><h2>الواجبات</h2><span class="chip late">1 متأخر</span></div>
+              <div class="list-row"><div class="row-main"><p>واجب الهندسة الفراغية</p><span>تسليم: 12 يوليو</span></div><span class="chip pending">قيد الانتظار</span></div>
+              <div class="list-row"><div class="row-main"><p>ورقة عمل التفاضل</p><span>تسليم: 9 يوليو</span></div><span class="chip late">متأخر</span></div>
+              <div class="list-row"><div class="row-main"><p>تمارين الاحتمالات</p><span>درجة: 18/20</span></div><span class="chip done">تم التصحيح</span></div>
+            </div>
+            <div class="card fadeUp" style="padding:20px">
+              <div class="section-head" style="margin-bottom:6px"><h2>الاختبارات القادمة</h2></div>
+              <div class="list-row"><div class="row-main"><p>اختبار منتصف الترم — الرياضيات</p><span>الثلاثاء، 14 يوليو</span></div><span class="chip info">7 أيام</span></div>
+              <div class="list-row"><div class="row-main"><p>اختبار قصير — الفيزياء</p><span>الخميس، 16 يوليو</span></div><span class="chip info">9 أيام</span></div>
+            </div>
+            <div class="card fadeUp" style="padding:20px">
+              <div class="section-head" style="margin-bottom:6px"><h2>إعلانات جديدة</h2></div>
+              <div class="list-row"><div class="row-main"><p>تم فتح باب التسجيل لحصص المراجعة النهائية</p><span>منذ يومين · أ. أحمد فتحي</span></div></div>
+              <div class="list-row"><div class="row-main"><p>تحديث جدول الحصص المباشرة لشهر يوليو</p><span>منذ 4 أيام · إدارة المنصة</span></div></div>
+            </div>
+          </div>
+
+          <div class="section-head"><h2>شهاداتي الأخيرة</h2><a class="link-more" href="#" data-view="certificates">عرض الكل ←</a></div>
+          <div class="grid grid-3">
+            <div class="card hoverable fadeUp" style="padding:18px;display:flex;gap:14px;align-items:center">
+              <div style="width:46px;height:46px;border-radius:13px;background:var(--gold-light);display:flex;align-items:center;justify-content:center;font-size:22px">🏆</div>
+              <div><p style="font-weight:700;font-size:13.5px">إتمام دورة الجبر الخطي</p><span style="font-size:11.5px;color:var(--ink-faint)">صدرت في 2 يوليو 2026</span></div>
+            </div>
+            <div class="card hoverable fadeUp" style="padding:18px;display:flex;gap:14px;align-items:center">
+              <div style="width:46px;height:46px;border-radius:13px;background:var(--sage-light);display:flex;align-items:center;justify-content:center;font-size:22px">📘</div>
+              <div><p style="font-weight:700;font-size:13.5px">أساسيات الهندسة التحليلية</p><span style="font-size:11.5px;color:var(--ink-faint)">صدرت في 20 يونيو 2026</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================ -->
+      <!-- VIEW: COURSES -->
+      <!-- ============================================================ -->
+      <section class="view" id="view-courses">
+        <h1 class="page-title">دوراتي</h1>
+        <p class="page-sub">جميع الدورات المسجّل بها، تابع تقدمك واستكمل من حيث توقفت</p>
+        <div class="tabs">
+          <div class="tab active">الكل (5)</div>
+          <div class="tab">قيد التقدم (3)</div>
+          <div class="tab">مكتملة (2)</div>
+        </div>
+        <div class="grid grid-3">
+          <div class="card course-card hoverable">
+            <div class="course-thumb"><span class="pct-badge">74٪ مكتمل</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 19V6a2 2 0 0 1 2-2h9l5 5v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"/><path d="M15 4v5h5"/></svg></div>
+            <div class="course-body">
+              <h4>المعادلات التفاضلية والتكامل</h4>
+              <div class="teacher-row"><span class="mini-av">سم</span> أ. سارة محمود</div>
+              <div class="progress-track"><div class="progress-fill" style="width:74%"></div></div>
+              <div class="course-meta"><span>آخر درس: الطرق العددية</span><span>8 من 20 متبقي</span></div>
+              <button class="btn btn-primary btn-sm" style="margin-top:4px" onclick="switchView('lesson')">متابعة</button>
+            </div>
+          </div>
+          <div class="card course-card hoverable">
+            <div class="course-thumb" style="background:linear-gradient(135deg,var(--sage-light),var(--surface-2))"><span class="pct-badge">42٪ مكتمل</span><svg viewBox="0 0 24 24" fill="none" stroke="var(--sage)" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M8 12h8M12 8v8"/></svg></div>
+            <div class="course-body">
+              <h4>الفيزياء — الكهرباء والمغناطيسية</h4>
+              <div class="teacher-row"><span class="mini-av">أف</span> أ. أحمد فتحي</div>
+              <div class="progress-track"><div class="progress-fill" style="width:42%"></div></div>
+              <div class="course-meta"><span>آخر درس: قانون فاراداي</span><span>11 من 19 متبقي</span></div>
+              <button class="btn btn-primary btn-sm" style="margin-top:4px" onclick="switchView('lesson')">متابعة</button>
+            </div>
+          </div>
+          <div class="card course-card hoverable">
+            <div class="course-thumb" style="background:linear-gradient(135deg,var(--gold-light),var(--surface-2))"><span class="pct-badge">100٪ مكتمل</span><svg viewBox="0 0 24 24" fill="none" stroke="var(--gold-deep)" stroke-width="1.5"><path d="m3 11 18-8-8 18-2-8-8-2Z"/></svg></div>
+            <div class="course-body">
+              <h4>الجبر الخطي التطبيقي</h4>
+              <div class="teacher-row"><span class="mini-av">سم</span> أ. سارة محمود</div>
+              <div class="progress-track"><div class="progress-fill" style="width:100%"></div></div>
+              <div class="course-meta"><span>مكتملة بالكامل 🎉</span><span>0 متبقي</span></div>
+              <button class="btn btn-secondary btn-sm" style="margin-top:4px" onclick="switchView('lesson')">مراجعة الدورة</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================ -->
+      <!-- VIEW: LESSON PAGE -->
+      <!-- ============================================================ -->
+      <section class="view" id="view-lesson">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px">
+          <button class="btn btn-ghost btn-sm" onclick="switchView('courses')">← رجوع للدورة</button>
+          <span style="color:var(--ink-faint);font-size:13px">المعادلات التفاضلية / الوحدة 3</span>
+        </div>
+        <div class="grid" style="grid-template-columns:2fr 1fr;gap:22px;align-items:start">
+          <div>
+            <div class="video-shell">
+              <div class="play-btn"><svg viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg></div>
+              <div class="bar"><span>05:12</span><div style="flex:1;height:4px;background:rgba(255,255,255,.25);border-radius:10px;overflow:hidden"><div style="width:38%;height:100%;background:var(--gold)"></div></div><span>22:40</span></div>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-top:16px;flex-wrap:wrap;gap:10px">
+              <div>
+                <h2 style="font-size:18px;font-weight:800;margin-bottom:4px">الدرس 8: طرق الحل العددي للمعادلات التفاضلية</h2>
+                <p style="font-size:12.5px;color:var(--ink-soft)">⏱ مدة الدرس: 22 دقيقة · أ. سارة محمود</p>
+              </div>
+              <div style="display:flex;gap:8px">
+                <button class="btn btn-secondary btn-sm" onclick="showToast('info','ده أول درس في الوحدة')">◀ السابق</button>
+                <button class="btn btn-primary btn-sm" onclick="showToast('success','تم تسجيل الدرس كمكتمل ✅')">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
+                  إنهاء الدرس
+                </button>
+                <button class="btn btn-secondary btn-sm" onclick="showToast('success','جاري الانتقال للدرس التالي…')">التالي ▶</button>
+              </div>
+            </div>
+
+            <div class="tabs" style="margin-top:22px">
+              <div class="tab active">الملخص والموارد</div>
+              <div class="tab">ملاحظاتي</div>
+              <div class="tab">التعليقات (12)</div>
+            </div>
+            <div class="card" style="padding:20px;margin-bottom:16px">
+              <h3 style="font-size:14.5px;font-weight:700;margin-bottom:10px">📎 ملفات ومرفقات الدرس</h3>
+              <div class="attach-row"><div class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 3h8l4 4v14H7z"/></svg></div><div class="fname">ملخص الطرق العددية.pdf<div class="fsize">2.4 MB</div></div><button class="btn btn-secondary btn-sm" onclick="showToast('success','جاري تحميل الملف…')">تحميل</button></div>
+              <div class="attach-row"><div class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 3h8l4 4v14H7z"/></svg></div><div class="fname">أوراق تمارين إضافية.pdf<div class="fsize">1.1 MB</div></div><button class="btn btn-secondary btn-sm" onclick="showToast('success','جاري تحميل الملف…')">تحميل</button></div>
+            </div>
+            <div class="card" style="padding:20px">
+              <h3 style="font-size:14.5px;font-weight:700;margin-bottom:10px">📝 ملاحظاتي الخاصة</h3>
+              <textarea class="form-control" rows="4" placeholder="اكتب ملاحظاتك هنا أثناء المذاكرة…"></textarea>
+              <button class="btn btn-primary btn-sm" style="margin-top:10px" onclick="showToast('success','تم حفظ ملاحظتك')">حفظ الملاحظة</button>
+            </div>
+          </div>
+
+          <div>
+            <div class="card" style="padding:18px;margin-bottom:16px">
+              <button class="btn btn-primary" style="width:100%;justify-content:center;margin-bottom:9px" onclick="showToast('info','المساعد الذكي جاهز لمساعدتك 🤖')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1"/></svg>
+                اسأل المساعد الذكي
+              </button>
+              <button class="btn btn-secondary" style="width:100%;justify-content:center" onclick="showToast('info','تم إرسال سؤالك للمعلم')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16v13H7l-3 3z"/></svg>
+                اسأل المعلم
+              </button>
+            </div>
+            <div class="card" style="padding:18px">
+              <h3 style="font-size:14px;font-weight:700;margin-bottom:12px">محتوى الوحدة</h3>
+              <div class="list-row"><div class="row-icon" style="background:var(--sage-light);color:var(--sage)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg></div><div class="row-main"><p>الدرس 7: مقدمة المعادلات</p><span>18 دقيقة</span></div></div>
+              <div class="list-row" style="background:var(--gold-light);border-radius:12px;padding:13px 10px;margin:0 -10px"><div class="row-icon" style="background:var(--gold-deep);color:#fff"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 3l14 9-14 9V3z"/></svg></div><div class="row-main"><p>الدرس 8: الطرق العددية</p><span>22 دقيقة · قيد المشاهدة</span></div></div>
+              <div class="list-row"><div class="row-icon" style="background:var(--surface-2);color:var(--ink-faint)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg></div><div class="row-main"><p>الدرس 9: تطبيقات عملية</p><span>25 دقيقة</span></div></div>
+              <div class="list-row"><div class="row-icon" style="background:var(--surface-2);color:var(--ink-faint)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg></div><div class="row-main"><p>الدرس 10: مراجعة الوحدة</p><span>15 دقيقة</span></div></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================ -->
+      <!-- VIEW: HOMEWORK -->
+      <!-- ============================================================ -->
+      <section class="view" id="view-homework">
+        <h1 class="page-title">الواجبات</h1>
+        <p class="page-sub">تابع واجباتك، وسلّم أعمالك قبل الموعد النهائي</p>
+        <div class="tabs">
+          <div class="tab active">الكل</div>
+          <div class="tab">قيد الانتظار</div>
+          <div class="tab">متأخرة</div>
+          <div class="tab">تم التصحيح</div>
+        </div>
+        <div class="grid grid-2">
+          <div class="card" style="padding:20px">
+            <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:10px">
+              <div><h3 style="font-size:15px;font-weight:700;margin-bottom:4px">واجب الهندسة الفراغية — الوحدة 4</h3><p style="font-size:12.5px;color:var(--ink-soft)">موعد التسليم: 12 يوليو 2026 · 11:59 م</p></div>
+              <span class="chip pending">قيد الانتظار</span>
+            </div>
+            <div class="dropzone">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>
+              <div>اسحب الملف هنا أو <b style="color:var(--gold-deep)">اختر من جهازك</b></div>
+            </div>
+            <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:12px" onclick="openModal('submitModal')">تسليم الواجب</button>
+          </div>
+          <div class="card" style="padding:20px">
+            <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:10px">
+              <div><h3 style="font-size:15px;font-weight:700;margin-bottom:4px">ورقة عمل التفاضل — الوحدة 3</h3><p style="font-size:12.5px;color:var(--ink-soft)">موعد التسليم: 9 يوليو 2026 · انتهى</p></div>
+              <span class="chip late">متأخر</span>
+            </div>
+            <p style="font-size:13px;color:var(--ink-soft);margin-bottom:12px">فات موعد التسليم الرسمي، يمكنك التواصل مع المعلم لطلب تمديد.</p>
+            <button class="btn btn-secondary" style="width:100%;justify-content:center" onclick="showToast('success','تم إرسال طلبك للمعلم بخصوص تمديد الموعد')">تواصل مع المعلم</button>
+          </div>
+          <div class="card" style="padding:20px">
+            <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:10px">
+              <div><h3 style="font-size:15px;font-weight:700;margin-bottom:4px">تمارين الاحتمالات — الوحدة 2</h3><p style="font-size:12.5px;color:var(--ink-soft)">تم التسليم: 30 يونيو 2026</p></div>
+              <span class="chip done">تم التصحيح</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:14px;background:var(--surface-2);border-radius:12px;padding:12px 14px;margin-bottom:10px">
+              <div style="font-family:'Cairo';font-weight:800;font-size:20px;color:var(--sage)">18/20</div>
+              <p style="font-size:12.5px;color:var(--ink-soft)">"أداء ممتاز يا يوسف، انتبه فقط لصياغة الحل النهائي في السؤال الرابع." — أ. سارة محمود</p>
+            </div>
+            <button class="btn btn-secondary" style="width:100%;justify-content:center" onclick="showToast('info','جاري فتح تفاصيل التصحيح…')">عرض التصحيح كاملًا</button>
+          </div>
+          <div class="card" style="padding:20px">
+            <h3 style="font-size:15px;font-weight:700;margin-bottom:12px">سجل التسليمات السابقة</h3>
+            <div class="list-row"><div class="row-main"><p>واجب المتتابعات الحسابية</p><span>15 يونيو · درجة 20/20</span></div><span class="chip done">مكتمل</span></div>
+            <div class="list-row"><div class="row-main"><p>واجب النهايات والاتصال</p><span>8 يونيو · درجة 16/20</span></div><span class="chip done">مكتمل</span></div>
+            <div class="list-row"><div class="row-main"><p>واجب الدوال المثلثية</p><span>1 يونيو · درجة 19/20</span></div><span class="chip done">مكتمل</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================ -->
+      <!-- VIEW: EXAMS -->
+      <!-- ============================================================ -->
+      <section class="view" id="view-exams">
+        <h1 class="page-title">الاختبارات</h1>
+        <p class="page-sub">تابع مواعيد اختباراتك ونتائجك وحلّل أداءك</p>
+        <div class="card" style="padding:24px;margin-bottom:20px;background:linear-gradient(120deg,var(--ink),#223a63);color:#fff">
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px">
+            <div>
+              <span style="font-size:12.5px;opacity:.75">أقرب اختبار</span>
+              <h2 style="font-size:18px;font-weight:800;margin:4px 0 2px">اختبار منتصف الترم — الرياضيات</h2>
+              <p style="font-size:12.5px;opacity:.75">الثلاثاء، 14 يوليو 2026 · الساعة 10:00 صباحًا</p>
+            </div>
+            <div class="countdown">
+              <div class="box"><div class="n">07</div><div class="l">أيام</div></div>
+              <div class="box"><div class="n">14</div><div class="l">ساعة</div></div>
+              <div class="box"><div class="n">32</div><div class="l">دقيقة</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="grid grid-2">
+          <div class="card" style="padding:20px">
+            <h3 style="font-size:15px;font-weight:700;margin-bottom:14px">نتائجي السابقة</h3>
+            <div class="list-row"><div class="row-main"><p>اختبار الوحدة الثالثة</p><span>28 يونيو 2026</span></div><span class="chip done">88٪</span></div>
+            <div class="list-row"><div class="row-main"><p>اختبار قصير — التكامل</p><span>15 يونيو 2026</span></div><span class="chip done">92٪</span></div>
+            <div class="list-row"><div class="row-main"><p>اختبار الوحدة الثانية</p><span>1 يونيو 2026</span></div><span class="chip late">64٪</span></div>
+            <button class="btn btn-secondary" style="width:100%;justify-content:center;margin-top:6px" onclick="showToast('info','جاري فتح مراجعة الأخطاء…')">مراجعة الأخطاء السابقة</button>
+          </div>
+          <div class="card" style="padding:20px">
+            <h3 style="font-size:15px;font-weight:700;margin-bottom:14px">تحليل الأداء</h3>
+            <div style="display:flex;align-items:flex-end;gap:14px;height:140px;padding:0 6px">
+              <div style="flex:1;text-align:center"><div style="height:64%;background:var(--gold);border-radius:8px 8px 0 0"></div><span style="font-size:10.5px;color:var(--ink-faint)">و2</span></div>
+              <div style="flex:1;text-align:center"><div style="height:92%;background:var(--sage);border-radius:8px 8px 0 0"></div><span style="font-size:10.5px;color:var(--ink-faint)">تكامل</span></div>
+              <div style="flex:1;text-align:center"><div style="height:88%;background:var(--sage);border-radius:8px 8px 0 0"></div><span style="font-size:10.5px;color:var(--ink-faint)">و3</span></div>
+              <div style="flex:1;text-align:center"><div style="height:76%;background:var(--info);border-radius:8px 8px 0 0"></div><span style="font-size:10.5px;color:var(--ink-faint)">متوسط</span></div>
+            </div>
+            <p style="font-size:12px;color:var(--ink-soft);margin-top:12px">نقطة قوتك: التكامل. يحتاج تحسين: أسئلة الوحدة الثانية (الاحتمالات).</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================ -->
+      <!-- VIEW: CERTIFICATES -->
+      <!-- ============================================================ -->
+      <section class="view" id="view-certificates">
+        <h1 class="page-title">شهاداتي</h1>
+        <p class="page-sub">كل الشهادات التي حصلت عليها بعد إتمام الدورات بنجاح</p>
+        <div class="grid grid-3">
+          <div class="card hoverable" style="padding:22px;text-align:center">
+            <div style="width:60px;height:60px;border-radius:16px;background:var(--gold-light);display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 12px">🏆</div>
+            <h4 style="font-weight:700;font-size:14px;margin-bottom:4px">إتمام دورة الجبر الخطي</h4>
+            <p style="font-size:11.5px;color:var(--ink-faint);margin-bottom:14px">صدرت 2 يوليو 2026</p>
+            <button class="btn btn-secondary btn-sm" style="width:100%;justify-content:center" onclick="showToast('success','جاري تحميل شهادة: إتمام دورة الجبر الخطي')">تحميل PDF</button>
+          </div>
+          <div class="card hoverable" style="padding:22px;text-align:center">
+            <div style="width:60px;height:60px;border-radius:16px;background:var(--sage-light);display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 12px">📘</div>
+            <h4 style="font-weight:700;font-size:14px;margin-bottom:4px">أساسيات الهندسة التحليلية</h4>
+            <p style="font-size:11.5px;color:var(--ink-faint);margin-bottom:14px">صدرت 20 يونيو 2026</p>
+            <button class="btn btn-secondary btn-sm" style="width:100%;justify-content:center" onclick="showToast('success','جاري تحميل شهادة: أساسيات الهندسة التحليلية')">تحميل PDF</button>
+          </div>
+        </div>
+        <div class="section-head" style="margin-top:30px"><h2>إنجازاتي</h2></div>
+        <div class="grid grid-4">
+          <div class="card badge-tile"><div class="icon" style="background:var(--gold-light)">🔥</div><span>سلسلة 10 أيام</span></div>
+          <div class="card badge-tile"><div class="icon" style="background:var(--sage-light)">🎯</div><span>دقة 90٪+</span></div>
+          <div class="card badge-tile locked"><div class="icon" style="background:var(--surface-2)">⭐</div><span>50 درسًا</span></div>
+          <div class="card badge-tile locked"><div class="icon" style="background:var(--surface-2)">🏅</div><span>بطل الترم</span></div>
+        </div>
+      </section>
+
+      <!-- ============================================================ -->
+      <!-- VIEW: AI -->
+      <!-- ============================================================ -->
+      <section class="view" id="view-ai">
+        <h1 class="page-title">المساعد الذكي</h1>
+        <p class="page-sub">اسأل أي سؤال عن مادتك الدراسية وسيساعدك المساعد فورًا</p>
+        <div class="card empty-state">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="4"/><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg></div>
+          <h4>ابدأ محادثة جديدة</h4>
+          <p>اسأل عن شرح مفهوم، حل تمرين، أو مراجعة سريعة قبل الاختبار.</p>
+          <button class="btn btn-primary" style="margin-top:16px" onclick="showToast('info','جاري تجهيز المساعد الذكي…')">ابدأ السؤال</button>
+        </div>
+      </section>
+
+      <!-- ============================================================ -->
+      <!-- VIEW: PROFILE -->
+      <!-- ============================================================ -->
+      <section class="view" id="view-profile">
+        <h1 class="page-title">ملفي الشخصي</h1>
+        <p class="page-sub">إدارة بياناتك الشخصية وإعدادات حسابك</p>
+        <div class="tabs">
+          <div class="tab active">البيانات الشخصية</div>
+          <div class="tab">إحصائيات التعلم</div>
+          <div class="tab">الحضور</div>
+          <div class="tab">الإعدادات</div>
+        </div>
+        <div class="grid" style="grid-template-columns:1fr 2fr;gap:20px">
+          <div class="card" style="padding:24px;text-align:center">
+            <div class="avatar" id="profAvatar" style="width:84px;height:84px;font-size:28px;border-radius:22px;margin:0 auto 14px">يو</div>
+            <h3 style="font-weight:800;font-size:16px" id="profName">يوسف كريم</h3>
+            <p style="font-size:12.5px;color:var(--ink-soft);margin-bottom:16px" id="profGrade">الصف الثالث الثانوي</p>
+            <button class="btn btn-secondary" style="width:100%;justify-content:center" type="button" onclick="document.getElementById('profileImageInput').click()">تغيير الصورة</button>
+          </div>
+          <div class="card" style="padding:24px">
+            <div class="form-group"><label>الاسم الكامل</label><input class="form-control" id="profNameInput" value="يوسف كريم"></div>
+            <div class="grid grid-2">
+              <div class="form-group"><label>رقم الهاتف</label><input class="form-control" id="profPhoneInput" value="01012345678" disabled></div>
+              <div class="form-group"><label>رقم ولي الأمر</label><input class="form-control" value="01098765432"></div>
+            </div>
+            <div class="form-group"><label>البريد الإلكتروني</label><input class="form-control" value="youssef.k@example.com"></div>
+            <button class="btn btn-primary" onclick="saveProfile()">حفظ التغييرات</button>
+          </div>
+        </div>
+        <div class="grid grid-4" style="margin-top:20px">
+          <div class="card stat-card"><div class="value">124 ساعة</div><div class="label">إجمالي وقت المذاكرة</div></div>
+          <div class="card stat-card"><div class="value">96٪</div><div class="label">نسبة الحضور</div></div>
+          <div class="card stat-card"><div class="value">83٪</div><div class="label">متوسط درجات الاختبارات</div></div>
+          <div class="card stat-card"><div class="value">5</div><div class="label">دورات مسجّل بها</div></div>
+        </div>
+      </section>
+
+    </main>
+    <footer style="text-align:center;padding:20px;color:var(--ink-faint);font-size:12px">© 2026 منصة إتقان للتعليم الإلكتروني</footer>
+  </div>
+</div>
+
+<input type="file" id="profileImageInput" accept="image/*" style="display:none" aria-label="اختيار صورة الملف الشخصي">
+<button class="fab" title="اسأل المعلم" onclick="showToast('info','تم فتح نافذة التواصل مع المعلم')">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v13H7l-3 3z"/></svg>
+</button>
+
+<!-- Submit homework modal -->
+<div class="modal-overlay" id="submitModal">
+  <div class="modal">
+    <div class="modal-head"><h3>تسليم الواجب</h3><button class="icon-btn modal-close" type="button" onclick="closeModal('submitModal')" aria-label="إغلاق"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 8l8 8M16 8l-8 8"/></svg></button></div>
+    <div class="modal-body">
+      <div class="form-group"><label>عنوان الواجب</label><input class="form-control" value="واجب الهندسة الفراغية — الوحدة 4" disabled></div>
+      <div class="form-group">
+        <label>رفع الملف</label>
+        <label class="dropzone" for="homeworkFileInput" style="display:block;cursor:pointer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>
+          <div id="homeworkDropzoneText">اسحب الملف هنا أو <b style="color:var(--gold-deep)">اختر من جهازك</b></div>
+        </label>
+        <input id="homeworkFileInput" type="file" style="display:none" aria-label="رفع ملف الواجب">
+      </div>
+      <div class="form-group"><label>ملاحظة للمعلم (اختياري)</label><textarea class="form-control" id="homeworkNoteInput" rows="3" placeholder="اكتب أي ملاحظة..."></textarea></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-primary" id="submitHomeworkBtn" type="button">تسليم الآن</button>
+      <button class="btn btn-secondary" type="button" onclick="closeModal('submitModal')">إلغاء</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script src="common.js"></script>
+<script>
+/* ================= Theme ================= */
+const root = document.documentElement;
+function applyTheme(t){ root.setAttribute('data-theme', t); localStorage.setItem('etqan_theme', t); }
+applyTheme(localStorage.getItem('etqan_theme') || 'light');
+document.getElementById('themeToggle').addEventListener('click', ()=>{
+  applyTheme(root.getAttribute('data-theme')==='dark' ? 'light' : 'dark');
+});
+
+/* ================= Sidebar / mobile ================= */
+const sidebar = document.getElementById('sidebar');
+const overlayBg = document.getElementById('overlayBg');
+document.getElementById('menuBtn').addEventListener('click', ()=>{ sidebar.classList.add('open'); overlayBg.classList.add('show'); });
+overlayBg.addEventListener('click', ()=>{ sidebar.classList.remove('open'); overlayBg.classList.remove('show'); });
+
+/* ================= View switching ================= */
+function switchView(name){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  const target = document.getElementById('view-'+name);
+  if(target) target.classList.add('active');
+  document.querySelectorAll('.nav-item[data-view]').forEach(n=>n.classList.toggle('active', n.dataset.view===name));
+  sidebar.classList.remove('open'); overlayBg.classList.remove('show');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+document.querySelectorAll('[data-view]').forEach(el=>{
+  el.addEventListener('click', (e)=>{ e.preventDefault(); switchView(el.dataset.view); });
+});
+
+/* ================= Toasts ================= */
+function showToast(type, message){
+  const wrap = document.getElementById('toastWrap');
+  const icons = {
+    success:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6 9 17l-5-5"/></svg>',
+    error:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 9v4M12 17h.01"/><circle cx="12" cy="12" r="9"/></svg>',
+    info:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 8h.01M11 12h1v4h1"/><circle cx="12" cy="12" r="9"/></svg>'
+  };
+  const el = document.createElement('div');
+  el.className = 'toast '+type;
+  el.innerHTML = `<div class="ic">${icons[type]||icons.info}</div><p>${message}</p><button class="x" type="button" onclick="this.parentElement.remove()" aria-label="إغلاق التنبيه"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>`;
+  wrap.appendChild(el);
+  setTimeout(()=>{ el.style.opacity='0'; el.style.transform='translateY(10px)'; el.style.transition='.3s'; setTimeout(()=>el.remove(),300); }, 4200);
+}
+
+/* ================= Modals ================= */
+function openModal(id){ document.getElementById(id).classList.add('show'); }
+function closeModal(id){ document.getElementById(id).classList.remove('show'); }
+
+function applyAvatar(dataUrl){
+  const avatarEls = document.querySelectorAll('.avatar');
+  avatarEls.forEach((el)=>{
+    if (!el) return;
+    el.style.backgroundImage = `url(${dataUrl})`;
+    el.style.backgroundSize = 'cover';
+    el.style.backgroundPosition = 'center';
+    el.textContent = '';
+  });
+}
+
+function handleProfileImageSelect(file){
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ()=>{
+    const dataUrl = reader.result;
+    localStorage.setItem('etqan_student_avatar', dataUrl);
+    applyAvatar(dataUrl);
+    showToast('success','تم تحديث الصورة الشخصية');
+  };
+  reader.readAsDataURL(file);
+}
+
+const profileImageInput = document.getElementById('profileImageInput');
+if(profileImageInput){
+  profileImageInput.addEventListener('change', (event)=>{
+    handleProfileImageSelect(event.target.files && event.target.files[0]);
+    event.target.value = '';
+  });
+}
+
+const homeworkFileInput = document.getElementById('homeworkFileInput');
+const homeworkDropzoneText = document.getElementById('homeworkDropzoneText');
+const submitHomeworkBtn = document.getElementById('submitHomeworkBtn');
+if(homeworkFileInput && homeworkDropzoneText && submitHomeworkBtn){
+  homeworkFileInput.addEventListener('change', (event)=>{
+    const file = event.target.files && event.target.files[0];
+    homeworkDropzoneText.innerHTML = file ? `<b style="color:var(--gold-deep)">${file.name}</b>` : 'اسحب الملف هنا أو <b style="color:var(--gold-deep)">اختر من جهازك</b>';
+  });
+  submitHomeworkBtn.addEventListener('click', ()=>{
+    const note = document.getElementById('homeworkNoteInput').value.trim();
+    const file = homeworkFileInput.files && homeworkFileInput.files[0];
+    if (!file) {
+      showToast('error','يرجى اختيار ملف قبل التسليم');
+      return;
+    }
+    closeModal('submitModal');
+    showToast('success', `تم تسليم الواجب بنجاح: ${file.name}`);
+    if (note) showToast('info', `ملاحظة المعلم: ${note}`);
+    homeworkFileInput.value = '';
+    document.getElementById('homeworkNoteInput').value = '';
+    homeworkDropzoneText.innerHTML = 'اسحب الملف هنا أو <b style="color:var(--gold-deep)">اختر من جهازك</b>';
+  });
+}
+
+/* ================= Skeleton -> real content ================= */
+function buildSkeleton(){
+  let html = '<div class="card" style="height:180px;margin-bottom:22px" class="skeleton"></div>';
+  html = `<div class="skeleton" style="height:190px;border-radius:22px;margin-bottom:22px"></div>
+  <div class="grid grid-4" style="margin-bottom:24px">
+    ${'<div class="skeleton" style="height:110px;border-radius:18px"></div>'.repeat(4)}
+  </div>
+  <div class="grid" style="grid-template-columns:1.5fr 1fr;gap:20px">
+    <div class="skeleton" style="height:150px;border-radius:18px"></div>
+    <div class="skeleton" style="height:150px;border-radius:18px"></div>
+  </div>`;
+  document.getElementById('dashSkeleton').innerHTML = html;
+}
+buildSkeleton();
+setTimeout(()=>{
+  document.getElementById('dashSkeleton').style.display='none';
+  document.getElementById('dashReal').style.display='block';
+  showToast('success','تم تحديث بياناتك بنجاح');
+}, 900);
+
+/* Simple tab-click behavior for pill tabs (visual only demo) */
+document.querySelectorAll('.tabs').forEach(group=>{
+  group.querySelectorAll('.tab').forEach(t=>{
+    t.addEventListener('click', ()=>{ group.querySelectorAll('.tab').forEach(x=>x.classList.remove('active')); t.classList.add('active'); });
+  });
+});
+/* ================= Session wiring (EtqanDB) ================= */
+(async function(){
+  try{
+    const meRes = await EtqanAPI.me();
+    if(!meRes || !meRes.ok || !meRes.user || meRes.user.role !== 'student'){
+      window.location.href = 'login-student.html';
+      return;
+    }
+    const session = meRes.user;
+    const student = session || {};
+    const initials = (student.name||'طالب').trim().split(' ').slice(0,2).map(w=>w[0]).join('');
+    const savedAvatar = localStorage.getItem('etqan_student_avatar');
+    if(savedAvatar) applyAvatar(savedAvatar);
+    const grade = student.grade || 'طالب في إتقان';
+    document.querySelectorAll('#sideName,#profName').forEach(el=> el.textContent = session.name);
+    document.querySelectorAll('#sideAvatar,#topAvatar,#profAvatar').forEach(el=> el.textContent = initials);
+    document.querySelectorAll('#sideGrade,#profGrade').forEach(el=> el.textContent = grade);
+    const heroName = document.getElementById('heroName');
+    if(heroName) heroName.textContent = session.name.split(' ')[0];
+    const profNameInput = document.getElementById('profNameInput');
+    if(profNameInput) profNameInput.value = session.name;
+    const profPhoneInput = document.getElementById('profPhoneInput');
+    if(profPhoneInput) profPhoneInput.value = session.phone || '';
+
+    document.getElementById('logoutBtn').addEventListener('click', ()=>{
+      EtqanAPI.logout();
+      window.location.href = 'login-student.html';
+    });
+
+    window.saveProfile = async function(){
+      const newName = document.getElementById('profNameInput').value.trim();
+      if(!newName){ showToast('error','الاسم مطلوب'); return; }
+      const payload = { name: newName };
+      const res = await EtqanAPI.updateMe(payload).catch(()=>({ok:false}));
+      if(!res || !res.ok){ showToast('error','فشل حفظ البيانات'); return; }
+      showToast('success','تم حفظ بياناتك بنجاح');
+      setTimeout(()=> location.reload(), 700);
+    };
+  }catch(err){
+    window.location.href = 'login-student.html';
+  }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة المدير العام | إتقان</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800;900&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{ --ink:#142433; --ink-soft:#2B3E4F; --paper:#F4F5F1; --paper-2:#ECEEE8; --gold:#C89B3C; --gold-light:#F7EFDD; --sage:#3F6D5C; --sage-light:#E7F0EA; --line:#D8DBD4; --white:#FFFFFF; }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'IBM Plex Sans Arabic',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;}
+  header{background:var(--white);border-bottom:1px solid var(--line);padding:16px 28px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;position:sticky;top:0;z-index:20;}
+  .brand{display:flex;align-items:center;gap:10px;}
+  .brand img{height:34px;width:auto;object-fit:contain;display:block;}
+  .head-right{display:flex;align-items:center;gap:14px;}
+  .who{font-size:13.5px;color:var(--ink-soft);}
+  .logout{font-family:'Cairo',sans-serif;font-weight:700;font-size:13.5px;color:var(--ink-soft);background:var(--paper-2);border:1px solid var(--line);padding:9px 18px;border-radius:9px;cursor:pointer;}
+  .wrap{max-width:1180px;margin:0 auto;padding:32px 24px 60px;}
+  .page-title{font-family:'Cairo',sans-serif;font-size:23px;margin-bottom:24px;}
+
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:30px;}
+  .stat{background:var(--white);border:1px solid var(--line);border-radius:14px;padding:20px;}
+  .stat .num{font-family:'Cairo',sans-serif;font-weight:900;font-size:26px;color:var(--gold);}
+  .stat .lbl{font-size:12.5px;color:var(--ink-soft);margin-top:4px;}
+
+  .tabs{display:flex;gap:6px;margin-bottom:20px;border-bottom:1px solid var(--line);flex-wrap:wrap;}
+  .tab{font-family:'Cairo',sans-serif;font-weight:700;font-size:13.5px;padding:12px 18px;cursor:pointer;color:var(--ink-soft);border-bottom:2px solid transparent;}
+  .tab.active{color:var(--ink);border-bottom-color:var(--gold);}
+  .tab-panel{display:none;}
+  .tab-panel.active{display:block;}
+
+  .card{background:var(--white);border:1px solid var(--line);border-radius:16px;padding:24px;margin-bottom:22px;}
+  .card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px;}
+  .card h3{font-family:'Cairo',sans-serif;font-size:16px;}
+  table{width:100%;border-collapse:collapse;}
+  th,td{text-align:right;padding:10px 8px;font-size:13.5px;border-bottom:1px solid var(--line);vertical-align:middle;}
+  th{color:var(--ink-soft);font-weight:600;font-size:12px;}
+  .status-pill{display:inline-flex;font-size:11.5px;font-weight:700;padding:4px 10px;border-radius:100px;}
+  .status-pill.active{background:var(--sage-light);color:var(--sage);}
+  .status-pill.inactive{background:#FBEAEA;color:#9A2E2E;}
+  .btn{font-family:'Cairo',sans-serif;font-weight:700;font-size:13.5px;padding:10px 18px;border-radius:9px;border:none;cursor:pointer;background:var(--ink);color:var(--paper);}
+  .btn:hover{background:var(--gold);color:var(--ink);}
+  .mini-btn{font-family:'Cairo',sans-serif;font-weight:700;font-size:12px;padding:6px 12px;border-radius:7px;border:1px solid var(--line);background:var(--paper-2);cursor:pointer;color:var(--ink);}
+  .mini-btn:hover{background:var(--ink);color:var(--paper);}
+  .mini-btn.danger:hover{background:#9A2E2E;color:#fff;}
+  .row-actions{display:flex;gap:6px;flex-wrap:wrap;}
+
+  .modal-overlay{position:fixed;inset:0;background:rgba(20,36,51,.55);display:none;align-items:center;justify-content:center;z-index:100;padding:20px;}
+  .modal-overlay.show{display:flex;}
+  .modal{background:var(--white);border-radius:16px;padding:28px;width:100%;max-width:440px;max-height:88vh;overflow-y:auto;}
+  .modal h3{font-family:'Cairo',sans-serif;font-size:17px;margin-bottom:18px;}
+  .field{margin-bottom:16px;}
+  .field label{display:block;font-size:13px;font-weight:600;color:var(--ink-soft);margin-bottom:6px;}
+  .field input{width:100%;padding:11px 14px;border-radius:9px;border:1px solid var(--line);font-family:inherit;font-size:14px;}
+  .modal-actions{display:flex;gap:10px;margin-top:20px;}
+  .modal-actions .btn-ghost{background:var(--paper-2);color:var(--ink);}
+  .modal-actions .btn-ghost:hover{background:var(--paper-2);}
+
+  .perm-list{display:flex;flex-direction:column;gap:2px;}
+  .perm-row{display:flex;align-items:center;justify-content:space-between;padding:11px 4px;border-bottom:1px solid var(--line);}
+  .perm-row:last-child{border-bottom:none;}
+  .perm-row span{font-size:13.5px;}
+  .switch{position:relative;width:42px;height:24px;flex-shrink:0;}
+  .switch input{opacity:0;width:0;height:0;}
+  .slider{position:absolute;inset:0;background:#D8DBD4;border-radius:100px;cursor:pointer;transition:.2s;}
+  .slider::before{content:"";position:absolute;width:18px;height:18px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s;}
+  .switch input:checked + .slider{background:var(--sage);}
+  .switch input:checked + .slider::before{transform:translateX(-18px);}
+
+  .log-item{padding:11px 0;border-bottom:1px solid var(--line);font-size:13.5px;display:flex;justify-content:space-between;gap:12px;}
+  .log-item:last-child{border-bottom:none;}
+  .log-item .meta{color:var(--ink-soft);font-size:12px;white-space:nowrap;}
+  .empty{color:var(--ink-soft);font-size:13.5px;}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><img src="etqan-logo.png" alt="إتقان"></div>
+  <div class="head-right">
+    <span class="who" id="whoTxt"></span>
+    <button class="logout" onclick="doLogout()">تسجيل الخروج</button>
+  </div>
+</header>
+<div class="wrap">
+  <div class="page-title">لوحة تحكم المدير العام</div>
+
+  <div class="stats" id="statsRow"></div>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="teachers">المدرّسون</div>
+    <div class="tab" data-tab="students">الطلاب</div>
+    <div class="tab" data-tab="logs">سجل الأنشطة</div>
+  </div>
+
+  <div class="tab-panel active" id="panel-teachers">
+    <div class="card">
+      <div class="card-head">
+        <h3>إدارة حسابات المدرّسين</h3>
+        <button class="btn" onclick="openAddTeacher()">+ إضافة مدرّس جديد</button>
+      </div>
+      <div id="teachersTable"></div>
+    </div>
+  </div>
+
+  <div class="tab-panel" id="panel-students">
+    <div class="card">
+      <div class="card-head"><h3>كل الطلاب المسجّلين</h3></div>
+      <div id="studentsTable"></div>
+    </div>
+  </div>
+
+  <div class="tab-panel" id="panel-logs">
+    <div class="card">
+      <div class="card-head"><h3>سجل شامل لكل الأنشطة</h3></div>
+      <div id="logsList"></div>
+    </div>
+  </div>
+</div>
+
+<!-- مودال إضافة مدرّس -->
+<div class="modal-overlay" id="addTeacherModal">
+  <div class="modal">
+    <h3>إضافة مدرّس جديد</h3>
+    <form id="addTeacherForm">
+      <div class="field"><label>الاسم</label><input type="text" id="atName" required></div>
+      <div class="field"><label>البريد الإلكتروني</label><input type="email" id="atEmail" required></div>
+      <div class="field"><label>كلمة المرور</label><input type="text" id="atPass" required></div>
+      <div class="field"><label>المادة (اختياري)</label><input type="text" id="atSubject"></div>
+      <div class="modal-actions">
+        <button type="submit" class="btn">إضافة</button>
+        <button type="button" class="btn btn-ghost" onclick="closeModal('addTeacherModal')">إلغاء</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- مودال الصلاحيات -->
+<div class="modal-overlay" id="permModal">
+  <div class="modal">
+    <h3 id="permModalTitle">صلاحيات المدرّس</h3>
+    <div class="perm-list" id="permList"></div>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-ghost" onclick="closeModal('permModal')">إغلاق</button>
+    </div>
+  </div>
+</div>
+
+<!-- مودال تعديل بيانات مدرّس -->
+<div class="modal-overlay" id="editTeacherModal">
+  <div class="modal">
+    <h3>تعديل بيانات المدرّس</h3>
+    <form id="editTeacherForm">
+      <input type="hidden" id="etId">
+      <div class="field"><label>الاسم</label><input type="text" id="etName" required></div>
+      <div class="field"><label>البريد الإلكتروني</label><input type="email" id="etEmail" required></div>
+      <div class="field"><label>كلمة المرور</label><input type="text" id="etPass" required></div>
+      <div class="field"><label>المادة</label><input type="text" id="etSubject"></div>
+      <div class="modal-actions">
+        <button type="submit" class="btn">حفظ</button>
+        <button type="button" class="btn btn-ghost" onclick="closeModal('editTeacherModal')">إلغاء</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="common.js"></script>
+<script>
+  (async function(){
+    // validate session via API
+    try{
+      const meRes = await EtqanAPI.me();
+      if(!meRes || !meRes.ok || !meRes.user || meRes.user.role !== 'admin'){
+        window.location.href = 'login-admin.html';
+        return;
+      }
+      const session = meRes.user;
+      document.getElementById('whoTxt').textContent = session.name;
+
+      function doLogout(){ EtqanAPI.logout(); window.location.href = 'index.html'; }
+      window.doLogout = doLogout;
+
+      const PERM_LABELS = {
+        viewStudents:'عرض بيانات الطلاب (بدون تعديل)',
+        toggleStudentStatus:'تفعيل / إيقاف حسابات الطلاب',
+        deleteStudent:'حذف حساب طالب نهائيًا',
+        addAnnouncements:'إضافة إعلانات على الصفحة الرئيسية',
+        viewParentPhones:'عرض أرقام هواتف أولياء الأمور'
+      };
+
+      function openModal(id){ document.getElementById(id).classList.add('show'); }
+      function closeModal(id){ document.getElementById(id).classList.remove('show'); }
+
+      // ===== تبويبات =====
+  document.querySelectorAll('.tab').forEach(tab=>{
+    tab.addEventListener('click', ()=>{
+      document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById('panel-'+tab.dataset.tab).classList.add('active');
+    });
+  });
+
+      // ===== إضافة مدرّس =====
+      function openAddTeacher(){
+        document.getElementById('addTeacherForm').reset();
+        openModal('addTeacherModal');
+      }
+      document.getElementById('addTeacherForm').addEventListener('submit', async function(e){
+        e.preventDefault();
+        const payload = {
+          name: document.getElementById('atName').value.trim(),
+          email: document.getElementById('atEmail').value.trim(),
+          password: document.getElementById('atPass').value,
+          subject: document.getElementById('atSubject').value.trim()
+        };
+        const res = await EtqanAPI.adminCreateTeacher(payload).catch(err=>({ok:false, error:err.message}));
+        if(!res || !res.ok){ alert(res && res.error? res.error : 'فشل إنشاء المدرّس'); return; }
+        closeModal('addTeacherModal');
+        await render();
+      });
+
+      // ===== تعديل مدرّس =====
+      async function openEditTeacher(id){
+        const listRes = await EtqanAPI.adminGetTeachers().catch(()=>null);
+        const t = listRes && listRes.ok ? listRes.teachers.find(x=>x.id===id) : null;
+        if(!t) return;
+        document.getElementById('etId').value = t.id;
+        document.getElementById('etName').value = t.name;
+        document.getElementById('etEmail').value = t.email;
+        document.getElementById('etPass').value = '';
+        document.getElementById('etSubject').value = t.subject || '';
+        openModal('editTeacherModal');
+      }
+      document.getElementById('editTeacherForm').addEventListener('submit', async function(e){
+        e.preventDefault();
+        const id = document.getElementById('etId').value;
+        const payload = {
+          name: document.getElementById('etName').value.trim(),
+          email: document.getElementById('etEmail').value.trim(),
+          password: document.getElementById('etPass').value,
+          subject: document.getElementById('etSubject').value.trim()
+        };
+        const res = await EtqanAPI.adminUpdateTeacher(id, payload).catch(err=>({ok:false, error:err.message}));
+        if(!res || !res.ok){ alert(res && res.error? res.error : 'فشل تحديث المدرّس'); return; }
+        closeModal('editTeacherModal');
+        await render();
+      });
+
+      async function toggleTeacherActive(id, active){
+        const res = await EtqanAPI.adminSetTeacherActive(id, active).catch(()=>({ok:false}));
+        if(!res || !res.ok) return alert('فشل تغيير حالة المدرّس');
+        await render();
+      }
+      async function removeTeacher(id, name){
+        if(!confirm('متأكد من حذف حساب المدرّس "' + name + '"؟')) return;
+        const res = await EtqanAPI.adminDeleteTeacher(id).catch(()=>({ok:false}));
+        if(!res || !res.ok) return alert('فشل حذف المدرّس');
+        await render();
+      }
+
+  // ===== الصلاحيات (تُطبّق فورًا) =====
+      async function openPerms(id){
+        const listRes = await EtqanAPI.adminGetTeachers().catch(()=>null);
+        const t = listRes && listRes.ok ? listRes.teachers.find(x=>x.id===id) : null;
+        if(!t) return;
+        document.getElementById('permModalTitle').textContent = 'صلاحيات: ' + t.name;
+        const list = document.getElementById('permList');
+        list.innerHTML = Object.keys(PERM_LABELS).map(key=>`
+          <div class="perm-row">
+            <span>${PERM_LABELS[key]}</span>
+            <label class="switch">
+              <input type="checkbox" ${t.permissions && t.permissions[key]?'checked':''} onchange="(function(){ window.updatePerm('${t.id}','${key}', this.checked) }).call(this)">
+              <span class="slider"></span>
+            </label>
+          </div>
+        `).join('');
+        openModal('permModal');
+      }
+      async function updatePerm(teacherId, key, val){
+        const patch = {}; patch[key] = val;
+        const res = await EtqanAPI.adminSetTeacherPermissions(teacherId, patch).catch(()=>({ok:false}));
+        if(!res || !res.ok) return alert('فشل تحديث الصلاحيات');
+        await render();
+      }
+      window.updatePerm = updatePerm;
+
+      // ===== الطلاب =====
+      async function studentToggle(id){
+        const res = await EtqanAPI.adminSetStudentActive(id, true).catch(()=>({ok:false}));
+        // server will toggle based on body; here we flip by fetching current and inverting
+        // safer approach: fetch students then toggle specific
+        if(!res || !res.ok){
+          // try fetching students and toggling specific
+          const list = await EtqanAPI.adminGetStudents().catch(()=>null);
+          const stu = list && list.ok ? list.students.find(s=>s.id===id) : null;
+          if(!stu) return alert('طالب غير موجود');
+          const active = !stu.active;
+          const r2 = await EtqanAPI.adminSetStudentActive(id, active).catch(()=>({ok:false}));
+          if(!r2 || !r2.ok) return alert('فشل تغيير حالة الطالب');
+        }
+        await render();
+      }
+      async function studentDelete(id, name){
+        if(!confirm('متأكد من حذف حساب الطالب "' + name + '" نهائيًا؟')) return;
+        const res = await EtqanAPI.adminDeleteStudent(id).catch(()=>({ok:false}));
+        if(!res || !res.ok) return alert('فشل حذف الطالب');
+        await render();
+      }
+
+      // ===== الرسم (باستدعاء API) =====
+      async function render(){
+        const statsRes = await EtqanAPI.adminStats().catch(()=>({ok:false}));
+        const teachersRes = await EtqanAPI.adminGetTeachers().catch(()=>({ok:false}));
+        const studentsRes = await EtqanAPI.adminGetStudents().catch(()=>({ok:false}));
+        const logsRes = await EtqanAPI.adminGetLogs().catch(()=>({ok:false}));
+
+        const students = studentsRes && studentsRes.ok ? studentsRes.students : [];
+        const teachers = teachersRes && teachersRes.ok ? teachersRes.teachers : [];
+        const logs = logsRes && logsRes.ok ? logsRes.logs : [];
+
+        const sCount = statsRes && statsRes.ok ? statsRes.stats.totalStudents : students.length;
+        const tCount = statsRes && statsRes.ok ? statsRes.stats.totalTeachers : teachers.length;
+        const activeStudents = statsRes && statsRes.ok ? statsRes.stats.activeStudents : students.filter(s=>s.active).length;
+        const logsCount = logs.length;
+
+        document.getElementById('statsRow').innerHTML = `
+          <div class="stat"><div class="num">${sCount}</div><div class="lbl">إجمالي الطلاب</div></div>
+          <div class="stat"><div class="num">${tCount}</div><div class="lbl">إجمالي المدرّسين</div></div>
+          <div class="stat"><div class="num">${activeStudents}</div><div class="lbl">طلاب نشطون</div></div>
+          <div class="stat"><div class="num">${logsCount}</div><div class="lbl">إجمالي الأنشطة المسجّلة</div></div>
+        `;
+
+        // جدول المدرّسين
+        document.getElementById('teachersTable').innerHTML = `
+          <table>
+            <thead><tr><th>الاسم</th><th>البريد</th><th>المادة</th><th>الحالة</th><th>إجراءات</th></tr></thead>
+            <tbody>
+              ${teachers.map(t=>`
+                <tr>
+                  <td>${t.name}</td>
+                  <td>${t.email}</td>
+                  <td>${t.subject||'-'}</td>
+                  <td><span class="status-pill ${t.active?'active':'inactive'}">${t.active?'نشط':'موقوف'}</span></td>
+                  <td><div class="row-actions">
+                    <button class="mini-btn" onclick="openPerms('${t.id}')">الصلاحيات</button>
+                    <button class="mini-btn" onclick="openEditTeacher('${t.id}')">تعديل</button>
+                    <button class="mini-btn" onclick="toggleTeacherActive('${t.id}', ${!t.active})">${t.active?'إيقاف':'تفعيل'}</button>
+                    <button class="mini-btn danger" onclick="removeTeacher('${t.id}','${t.name.replace(/'/g,"")}")">حذف</button>
+                  </div></td>
+                </tr>
+              `).join('') || `<tr><td colspan="5" class="empty">لا يوجد مدرّسون بعد</td></tr>`}
+            </tbody>
+          </table>
+        `;
+
+        // جدول الطلاب
+        document.getElementById('studentsTable').innerHTML = `
+          <table>
+            <thead><tr><th>الاسم</th><th>الهاتف</th><th>هاتف ولي الأمر</th><th>المادة</th><th>الحالة</th><th>إجراءات</th></tr></thead>
+            <tbody>
+              ${students.map(s=>`
+                <tr>
+                  <td>${s.name}</td>
+                  <td>${s.phone||'-'}</td>
+                  <td>${s.parentPhone||'-'}</td>
+                  <td>${s.subject||'-'}</td>
+                  <td><span class="status-pill ${s.active?'active':'inactive'}">${s.active?'نشط':'موقوف'}</span></td>
+                  <td><div class="row-actions">
+                    <button class="mini-btn" onclick="studentToggle('${s.id}')">${s.active?'إيقاف':'تفعيل'}</button>
+                    <button class="mini-btn danger" onclick="studentDelete('${s.id}','${s.name.replace(/'/g,"")}")">حذف</button>
+                  </div></td>
+                </tr>
+              `).join('') || `<tr><td colspan="6" class="empty">لا يوجد طلاب بعد</td></tr>`}
+            </tbody>
+          </table>
+        `;
+
+        // سجل الأنشطة
+        document.getElementById('logsList').innerHTML = logs.length ? logs.map(l=>`
+          <div class="log-item">
+            <span><strong>${l.actor}</strong> — ${l.action}</span>
+            <span class="meta">${new Date(l.ts).toLocaleString('ar-EG')}</span>
+          </div>
+        `).join('') : '<p class="empty">لا توجد أنشطة مسجّلة</p>';
+      }
+
+      // expose handlers for inline onclicks
+      window.openAddTeacher = openAddTeacher;
+      window.openEditTeacher = openEditTeacher;
+      window.toggleTeacherActive = toggleTeacherActive;
+      window.removeTeacher = removeTeacher;
+      window.openPerms = openPerms;
+      // updatePerm already exposed
+      window.studentToggle = studentToggle;
+      window.studentDelete = studentDelete;
+      window.openModal = openModal;
+      window.closeModal = closeModal;
+
+      await render();
+      window.addEventListener('etqan:db-changed', render);
+      window.addEventListener('storage', render);
+    }catch(err){
+      window.location.href = 'login-admin.html';
+    }
+  })();
+</script>
+</body>
+</html>
